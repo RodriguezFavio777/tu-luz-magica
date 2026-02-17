@@ -1,0 +1,229 @@
+'use client'
+
+import Link from 'next/link'
+import Image from 'next/image'
+import { ShoppingCart, Menu, X, Sparkles, Calendar, LogOut, User as UserIcon } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
+import { useCartBadge, useCart } from '@/hooks/useCart'
+import { useAuth } from '@/hooks/useAuth'
+import { CartService } from '@/services/cart.service'
+import { useCartStore } from '@/store/useCartStore'
+import { TriquetaLogo } from '@/components/ui/TriquetaLogo'
+import { CartDrawer } from '@/components/cart/CartDrawer'
+import { MoonPhaseIndicator } from '@/components/layout/MoonPhaseIndicator'
+
+function UserMenu() {
+    const { user, signInWithGoogle, signOut } = useAuth()
+    // Removed clearCart to persist cart across sessions locally (MVP) - User Request
+    const router = useRouter()
+    const [isOpen, setIsOpen] = useState(false)
+
+    if (!user) {
+        return (
+            <Link
+                href="/ingresar"
+                className="text-white/80 hover:text-white transition-colors text-xs font-bold uppercase tracking-wider"
+            >
+                Ingresar
+            </Link>
+        )
+    }
+
+    return (
+        <div className="relative">
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="flex items-center gap-2 p-1 rounded-full border border-white/10 hover:border-primary/50 transition-colors"
+            >
+                {user.user_metadata.avatar_url ? (
+                    <Image
+                        src={user.user_metadata.avatar_url}
+                        alt="Avatar"
+                        width={32}
+                        height={32}
+                        className="rounded-full"
+                    />
+                ) : (
+                    <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
+                        <UserIcon className="w-4 h-4 text-primary" />
+                    </div>
+                )}
+            </button>
+
+            {isOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-[#1d1520] border border-white/10 rounded-xl shadow-xl py-2 z-50">
+                    <div className="px-4 py-3 border-b border-white/5">
+                        <p className="text-white text-sm font-bold truncate">{user.user_metadata.full_name}</p>
+                        <p className="text-white/40 text-xs truncate">{user.email}</p>
+                    </div>
+                    <Link
+                        href="/perfil"
+                        onClick={() => setIsOpen(false)}
+                        className="w-full text-left px-4 py-3 text-white hover:bg-white/5 text-xs font-bold uppercase tracking-wider flex items-center gap-2"
+                    >
+                        <UserIcon className="w-3 h-3" />
+                        Mi Perfil
+                    </Link>
+                    <button
+                        onClick={() => {
+                            // clearCart() // Disabled by user request
+                            signOut()
+                            setIsOpen(false)
+                            router.push('/') // Redirect to home
+                            router.refresh() // Ensure clean state
+                        }}
+                        className="w-full text-left px-4 py-3 text-red-400 hover:bg-white/5 text-xs font-bold uppercase tracking-wider flex items-center gap-2 border-t border-white/5"
+                    >
+                        <LogOut className="w-3 h-3" />
+                        Cerrar Sesión
+                    </button>
+                </div>
+            )}
+        </div>
+    )
+}
+
+function HydratedBadge({ count }: { count: number }) {
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => {
+        setMounted(true)
+    }, [])
+
+    if (!mounted) return null
+
+    return (
+        <span className="absolute -top-1 -right-1 bg-[#f472b6] text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-[0_0_15px_rgba(244,114,182,0.4)]">
+            {count}
+        </span>
+    )
+}
+
+export function Navbar() {
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+    const [cartOpen, setCartOpen] = useState(false)
+    const [scrolled, setScrolled] = useState(false)
+    const { itemCount } = useCartBadge()
+    const { user, loading } = useAuth()
+    const pathname = usePathname()
+
+    const isActive = (path: string) => pathname === path
+
+    // Sync Cart with Server on Auth State Change
+    useEffect(() => {
+        if (loading) return
+
+        const syncCart = async () => {
+            if (user) {
+                try {
+                    const items = await CartService.getCart(user.id)
+                    useCartStore.getState().setItems(items)
+                } catch (error) {
+                    console.error('Failed to sync cart:', error)
+                }
+            } else {
+                // If no user and finished loading, ALWAYS clear cart (User requirement)
+                useCartStore.getState().clearCart()
+            }
+        }
+
+        syncCart()
+    }, [user, loading])
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 20)
+        }
+        window.addEventListener('scroll', handleScroll)
+        return () => window.removeEventListener('scroll', handleScroll)
+    }, [])
+
+    return (
+        <>
+            <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />
+
+            <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'bg-[#120d14]/80 backdrop-blur-xl border-b border-white/5 py-4' : 'bg-transparent py-6'
+                }`}>
+                <div className="max-w-[1280px] mx-auto px-6 flex items-center justify-between">
+                    {/* Logo */}
+                    <div className="flex items-center gap-6">
+                        <Link href="/" className="flex items-center gap-3 group">
+                            <TriquetaLogo size={42} className="group-hover:rotate-12 transition-transform duration-500" />
+                            <h1 className="text-2xl font-bold tracking-tight font-display bg-linear-to-r from-white to-white/70 bg-clip-text text-transparent">
+                                Tu Luz Mágica
+                            </h1>
+                        </Link>
+
+                        {/* Moon Phase - Desktop */}
+                        <div className="hidden lg:block border-l border-white/10 pl-6 ml-2">
+                            <MoonPhaseIndicator />
+                        </div>
+                    </div>
+
+                    {/* Navigation */}
+                    <nav className="hidden md:flex items-center gap-10">
+                        {[
+                            { name: 'Inicio', path: '/' },
+                            { name: 'Servicios', path: '/servicios' },
+                            { name: 'Tienda', path: '/productos' },
+                            { name: 'Sobre Mí', path: '/sobre-mi' },
+                        ].map((link) => (
+                            <Link
+                                key={link.path}
+                                href={link.path}
+                                className={`text-sm font-medium transition-colors ${isActive(link.path)
+                                    ? 'text-[#f472b6] font-bold'
+                                    : 'text-white/70 hover:text-[#f472b6]'
+                                    }`}
+                            >
+                                {link.name}
+                            </Link>
+                        ))}
+                    </nav>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-6">
+                        <button
+                            onClick={() => setCartOpen(true)}
+                            className="relative p-2 group"
+                        >
+                            <ShoppingCart className="w-6 h-6 text-white/70 group-hover:text-white transition-colors" />
+                            {itemCount > 0 && (
+                                <HydratedBadge count={itemCount} />
+                            )}
+                        </button>
+
+                        {/* User Auth */}
+                        <UserMenu />
+
+                        <Link href="/servicios" className="hidden sm:flex items-center gap-2 bg-[#f472b6] hover:bg-[#ec4899] text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-[0_4px_20px_rgba(244,114,182,0.3)] hover:scale-105 active:scale-95">
+                            <Calendar className="w-4 h-4" />
+                            Reservar Sesión
+                        </Link>
+
+                        <button
+                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                            className="md:hidden text-white"
+                        >
+                            {mobileMenuOpen ? <X /> : <Menu />}
+                        </button>
+                    </div>
+                </div>
+
+                {/* Mobile Menu */}
+                {mobileMenuOpen && (
+                    <div className="md:hidden absolute top-full left-0 w-full bg-[#120d14]/95 backdrop-blur-2xl border-b border-white/10 p-6 flex flex-col gap-6 animate-in slide-in-from-top duration-300">
+                        <Link href="/" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-white/90">Inicio</Link>
+                        <Link href="/servicios" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-white/90">Servicios</Link>
+                        <Link href="/productos" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-white/90">Tienda</Link>
+                        <Link href="/sobre-mi" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-white/90">Sobre Mí</Link>
+                        <Link href="/servicios" onClick={() => setMobileMenuOpen(false)} className="w-full bg-[#f472b6] text-white py-4 rounded-xl font-bold shadow-lg shadow-[#f472b6]/20 text-center uppercase tracking-widest text-xs">
+                            Reservar Sesión
+                        </Link>
+                    </div>
+                )}
+            </header>
+        </>
+    )
+}

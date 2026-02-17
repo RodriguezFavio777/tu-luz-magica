@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #120d14;
+  --color-foreground: #f8fafc;
+  --color-primary: #f472b6;
+  --color-primary-hover: #ec4899;
+  --color-secondary: #D4AF37;
+  --color-surface: #1d1520;
+  --color-surface-accent: #2a1e2e;
+
+  --font-display: var(--font-fraunces), serif;
+  --font-body: var(--font-manrope), sans-serif;
+}
+
+:root {
+  --background: #120d14;
+  --foreground: #f8fafc;
+  --primary: #f472b6;
+  --primary-hover: #ec4899;
+  --secondary: #D4AF37;
+  --surface: #1d1520;
+  --surface-accent: #2a1e2e;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-manrope), sans-serif;
+}
+
+/* Global Interactive Elements */
+a,
+button {
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+a:hover,
+button:hover {
+  opacity: 0.9;
+}
+
+/* Specific Primary Hover */
+.text-primary-hover:hover {
+  color: var(--primary);
+}
+
+.bg-primary-hover:hover {
+  background-color: var(--primary);
+  filter: brightness(1.1);
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+.selection-primary::selection {
+  background-color: #f472b6;
+  color: white;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-fraunces), serif;
+  letter-spacing: -0.01em;
+  color: white;
+  font-weight: 700;
+}
+
+@layer utilities {
+  .glow-text {
+    text-shadow: 0 0 15px rgba(244, 114, 182, 0.4);
+  }
+
+  .glow-border {
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+  }
+
+  .bg-star-pattern {
+    background-image: radial-gradient(white 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.03;
+  }
+
+  .glass-panel {
+    background: rgba(29, 21, 32, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}

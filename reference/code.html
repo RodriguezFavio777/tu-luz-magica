@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tu Luz Mágica by Camí - Home</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,100..900;1,100..900&amp;family=Manrope:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f472b6", // Pink-400
+                        "primary-hover": "#ec4899", // Pink-500
+                        "secondary": "#D4AF37", // Metallic Gold
+                        "background-light": "#fdf2f8",
+                        "background-dark": "#120d14",
+                        "surface-dark": "#1d1520",
+                        "surface-accent": "#2a1e2e",
+                    },
+                    fontFamily: {
+                        "display": ["Epilogue", "sans-serif"],
+                        "body": ["Manrope", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .glow-text {
+            text-shadow: 0 0 15px rgba(244, 114, 182, 0.4);
+        }
+        .glow-border {
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+        }
+        .bg-star-pattern {
+            background-image: radial-gradient(white 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.03;
+        }
+        .glass-panel {
+            background: rgba(29, 21, 32, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-background-dark text-slate-100 font-display selection:bg-primary selection:text-white">
+<div class="relative flex flex-col min-h-screen w-full overflow-x-hidden">
+<header class="fixed top-0 w-full z-50 bg-background-dark/60 backdrop-blur-xl border-b border-white/5">
+<div class="max-w-[1280px] mx-auto px-6 py-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-3xl">flare</span>
+<h1 class="text-white text-xl font-bold tracking-tight">Tu Luz Mágica</h1>
+</div>
+<nav class="hidden md:flex items-center gap-10">
+<a class="text-white/70 hover:text-primary text-sm font-medium transition-colors" href="#">Inicio</a>
+<a class="text-white/70 hover:text-primary text-sm font-medium transition-colors" href="#servicios">Servicios</a>
+<a class="text-white/70 hover:text-primary text-sm font-medium transition-colors" href="#tienda">Tienda</a>
+<a class="text-white/70 hover:text-primary text-sm font-medium transition-colors" href="#ebook">Ebook</a>
+<a class="text-white/70 hover:text-primary text-sm font-medium transition-colors" href="#sobre-mi">Sobre Mí</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="hidden sm:block bg-primary hover:bg-primary-hover text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-[0_4px_20px_rgba(244,114,182,0.3)]">
+                    Reservar Sesión
+                </button>
+<button class="md:hidden text-white">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</div>
+</header>
+<section class="relative min-h-screen flex items-center justify-center pt-20">
+<div class="absolute inset-0 z-0">
+<div class="absolute inset-0 bg-background-dark/40 z-10"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-background-dark/40 z-10"></div>
+<div class="w-full h-full bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDC8q67O81k9lwpZ5wtZdSJJiwGLnXK946JcUM0P0JINvIL0tl0UbzsVqS2lA7fP7eaTBBD8ttN1UvOiT_LuCnDScEcxIxWEOxciwHPFEecMeQvq4Rz0fypMd1ANYtsiY1c5KUUyc-m82zlMmC52yi8zkVqEh262U5cgNjjIUzMIDpcgA9UQuRGLJdfnW8WHinGasIfFfUqBTC6icoBsyqEI3_Drlnpu_tQkqEzkWhbLVJ33aILwAZ0Hr1lGCiLHyQH5_eid0iN7kA");'></div>
+</div>
+<div class="relative z-20 container mx-auto px-6 lg:px-12 max-w-7xl flex flex-col items-center text-center">
+<div class="max-w-4xl">
+<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/5 mb-8">
+<span class="material-symbols-outlined text-primary text-sm">auto_awesome</span>
+<span class="text-primary text-[10px] font-bold uppercase tracking-[0.2em]">Bienvenida a tu despertar</span>
+</div>
+<h2 class="text-6xl md:text-8xl font-black leading-[1.1] tracking-tight text-white mb-6 glow-text">
+                    Ilumina tu <br/>
+<span class="text-primary italic">Esencia</span> <span class="text-secondary">Sagrada</span>
+</h2>
+<p class="text-lg md:text-xl text-white/70 font-body font-light leading-relaxed mb-10 max-w-2xl mx-auto">
+                    Lecturas de tarot, rituales energéticos y herramientas místicas diseñadas por Camí para acompañarte en tu evolución espiritual.
+                </p>
+<div class="flex flex-col sm:flex-row gap-5 justify-center">
+<button class="h-14 px-10 rounded-full bg-primary text-white font-bold text-lg hover:bg-primary-hover transition-all shadow-[0_10px_30px_rgba(244,114,182,0.4)] flex items-center justify-center gap-3 group">
+<span>Reservar Sesión</span>
+<span class="material-symbols-outlined text-xl">calendar_today</span>
+</button>
+<button class="h-14 px-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-white font-bold text-lg hover:bg-white/10 transition-all flex items-center justify-center gap-3">
+<span class="material-symbols-outlined text-xl">shopping_bag</span>
+<span>Tienda Esotérica</span>
+</button>
+</div>
+</div>
+</div>
+<div class="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40">
+<span class="text-[10px] uppercase tracking-[0.3em] text-white">Explorar</span>
+<span class="material-symbols-outlined animate-bounce">expand_more</span>
+</div>
+</section>
+<section class="py-32 relative bg-background-dark" id="sobre-mi">
+<div class="absolute inset-0 bg-star-pattern"></div>
+<div class="container mx-auto px-6 max-w-7xl relative z-10">
+<div class="grid lg:grid-cols-2 gap-20 items-center">
+<div class="relative group">
+<div class="absolute -inset-4 bg-gradient-to-tr from-primary/30 to-secondary/30 rounded-[2rem] opacity-30 blur-2xl group-hover:opacity-50 transition-opacity duration-700"></div>
+<div class="relative rounded-[2rem] overflow-hidden border border-white/10 aspect-[4/5]">
+<div class="w-full h-full bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB_A_uTglQUKQhfqRNp8wuUXvXb6x6nzDN_viwRVS2bMUEbxrlLoAhJKL0qCtPzpto0mjqvjuLmMtYhdvXCE93AFGq5z2xFA4S9R6Y-FgGzmYzF40Wulnm8DXUotO4n2Za1sRc1YP3hXpRaZaUZHY13BCux20HWu4GMkNAvYqYlpVW0uNHBQXUTvGl_RFIO7RJXqm64yof07ZDo2RlsFKG8jWMhu5euDBar_5hnS9PMihHXo4nTaK7BO1gE2AiXNL96lL1kitTMuI4");'></div>
+<div class="absolute bottom-8 left-8 right-8 glass-panel p-6 rounded-2xl">
+<div class="flex items-center gap-2 text-secondary mb-2">
+<span class="material-symbols-outlined fill-current text-sm">star</span>
+<span class="material-symbols-outlined fill-current text-sm">star</span>
+<span class="material-symbols-outlined fill-current text-sm">star</span>
+<span class="material-symbols-outlined fill-current text-sm">star</span>
+<span class="material-symbols-outlined fill-current text-sm">star</span>
+</div>
+<p class="text-white/90 italic font-body text-sm leading-relaxed">
+                                "Mi misión es recordarte que el universo entero conspira a tu favor cuando aprendes a escuchar tu propia luz."
+                            </p>
+<p class="text-primary font-bold text-xs mt-3 uppercase tracking-widest">— Camí</p>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-8">
+<div>
+<h3 class="text-secondary text-sm font-bold uppercase tracking-[0.25em] mb-4">La Guía Detrás de la Magia</h3>
+<h2 class="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">Canalizando Luz para tu <span class="italic text-primary">Evolución</span></h2>
+<p class="text-white/60 text-lg leading-relaxed font-body mb-6">
+                            Soy Camí, terapeuta holística y guía espiritual. Mi camino comenzó con la búsqueda de respuestas en lo invisible, encontrando en el tarot y los rituales las herramientas perfectas para transformar realidades.
+                        </p>
+<p class="text-white/60 text-lg leading-relaxed font-body">
+                            En este santuario digital, te ofrezco un puente entre lo terrenal y lo divino, ayudándote a sanar bloqueos y manifestar la vida que tu alma anhela.
+                        </p>
+</div>
+<div class="grid grid-cols-2 gap-8 border-y border-white/5 py-8">
+<div>
+<span class="text-3xl font-bold text-white block">+800</span>
+<span class="text-white/40 text-xs uppercase tracking-widest">Almas conectadas</span>
+</div>
+<div>
+<span class="text-3xl font-bold text-white block">7+</span>
+<span class="text-white/40 text-xs uppercase tracking-widest">Años de experiencia</span>
+</div>
+</div>
+<a class="inline-flex items-center gap-3 text-secondary hover:text-primary font-bold transition-colors group" href="#">
+                        Conoce más sobre mi camino
+                        <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward_ios</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<section class="py-32 bg-surface-dark" id="servicios">
+<div class="container mx-auto px-6 max-w-7xl">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+<div class="max-w-xl">
+<h3 class="text-secondary text-sm font-bold uppercase tracking-[0.2em] mb-3">Servicios Destacados</h3>
+<h2 class="text-4xl font-bold text-white">Portal de Sanación</h2>
+</div>
+<button class="text-primary hover:text-primary-hover font-bold flex items-center gap-2 group border-b border-primary/20 pb-1">
+                    Ver todos los servicios
+                    <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">east</span>
+</button>
+</div>
+<div class="grid md:grid-cols-3 gap-8">
+<div class="group bg-background-dark border border-white/5 hover:border-primary/40 rounded-3xl overflow-hidden transition-all duration-500 hover:-translate-y-3">
+<div class="h-64 overflow-hidden relative">
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent z-10"></div>
+<div class="w-full h-full bg-cover bg-center group-hover:scale-110 transition-transform duration-1000" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAnbjkq_aE293Fj2rKcrUpDU_iGmSLpyah40lRAaE2vwSOD9zJmG5cs--IAcaqf_QaNm_lVdMbAWIpZ8eu5VpYGoj7B92G4X-TXuCxQBfguEWlg4K0VtbS_VjDfgF79y6LnP-HanaCSNitljD1tDGUIFXog0vtjWWiGvxqWbvM46zWroVpFxVsNWr2bCvCw_SleqOQE-DJrkkQWKQNlYIG1MoodP0Eqe-tsPaDac94n_SVQiufX607vUGyxmTOeJ1sL5BMxUGcMgds");'></div>
+<div class="absolute top-4 right-4 z-20 bg-primary text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">Popular</div>
+</div>
+<div class="p-8">
+<div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl">style</span>
+</div>
+<h4 class="text-2xl font-bold text-white mb-4">Lectura de Tarot Evolutivo</h4>
+<p class="text-white/50 text-sm font-body mb-8 leading-relaxed">
+                            No es solo adivinación, es una herramienta de autoconocimiento para entender tu presente y forjar tu futuro.
+                        </p>
+<div class="flex items-center justify-between">
+<span class="text-2xl font-bold text-white">$45 <span class="text-xs text-white/30 font-normal">/ 45 min</span></span>
+<button class="bg-white/5 hover:bg-primary text-white px-5 py-2 rounded-xl text-sm font-bold transition-colors">Reservar</button>
+</div>
+</div>
+</div>
+<div class="group bg-background-dark border border-white/5 hover:border-primary/40 rounded-3xl overflow-hidden transition-all duration-500 hover:-translate-y-3">
+<div class="h-64 overflow-hidden relative">
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent z-10"></div>
+<div class="w-full h-full bg-cover bg-center group-hover:scale-110 transition-transform duration-1000" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAzWpxaMBFe0GZPYOhjjdDoiVWAbBQ1neCkMySxuF7z79jWpoHx8HZFR_DnzLyqht-SyVlvJ35J4Tua50EB2DwJ97jL0N1CZfjwVcPcfvIH1TDeWesYR7yAT-AHP_N5SUt8de7hSLbEnMEWtXyH6NltLk_Bv8s4A4opBdTEihOTzTl_U86wQ69uoc8C5F-IrvUCid8KJjHqUj9nt6onj1rD7mxnrTqExP65pZ4hEDEB995CzG3S5oX7ZYrpVT2aMTC2n80_BsdFT7M");'></div>
+</div>
+<div class="p-8">
+<div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl">self_improvement</span>
+</div>
+<h4 class="text-2xl font-bold text-white mb-4">Limpieza y Alineación</h4>
+<p class="text-white/50 text-sm font-body mb-8 leading-relaxed">
+                            Sesión energética para remover bloqueos, limpiar tu aura y restaurar el equilibrio de tus centros vitales.
+                        </p>
+<div class="flex items-center justify-between">
+<span class="text-2xl font-bold text-white">$60 <span class="text-xs text-white/30 font-normal">/ 60 min</span></span>
+<button class="bg-white/5 hover:bg-primary text-white px-5 py-2 rounded-xl text-sm font-bold transition-colors">Reservar</button>
+</div>
+</div>
+</div>
+<div class="group bg-background-dark border border-white/5 hover:border-primary/40 rounded-3xl overflow-hidden transition-all duration-500 hover:-translate-y-3">
+<div class="h-64 overflow-hidden relative">
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent z-10"></div>
+<div class="w-full h-full bg-cover bg-center group-hover:scale-110 transition-transform duration-1000" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCVyGzEq1g1mHtR6UliPKH3QMXnPEZF6UIfrxXNQZtel_x0f2MyNm8h-8fxUWEwQWd5XuTuerOucq5ptLH0ESXKQElD7NP94if2zsEu4tf-SKOBg9jRNzzLhvj-vTfcOFDr2Q2zGsIcx-SJpFxcsVzNR-vJrVanPG2PZz_crUBVda1DDQ6zy6pFETjpGwmLWXLkeE5xzDE9CDHGdP8KHFtmR-BFswLC7fWDsxPn6wkyHwBjp0CanTNWX3-CRVgAVPas-6ss7Bo-AQ8");'></div>
+</div>
+<div class="p-8">
+<div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl">local_fire_department</span>
+</div>
+<h4 class="text-2xl font-bold text-white mb-4">Ritual Personalizado</h4>
+<p class="text-white/50 text-sm font-body mb-8 leading-relaxed">
+                            Ceremonias sagradas para la abundancia, el amor o la protección. Diseñados específicamente para tu intención.
+                        </p>
+<div class="flex items-center justify-between">
+<span class="text-2xl font-bold text-white">$85 <span class="text-xs text-white/30 font-normal">/ sesión</span></span>
+<button class="bg-white/5 hover:bg-primary text-white px-5 py-2 rounded-xl text-sm font-bold transition-colors">Reservar</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-32 bg-background-dark relative overflow-hidden" id="tienda">
+<div class="absolute right-0 top-0 w-1/2 h-full bg-primary/5 blur-[120px] rounded-full pointer-events-none"></div>
+<div class="container mx-auto px-6 max-w-7xl relative z-10">
+<div class="text-center mb-16">
+<h3 class="text-secondary text-sm font-bold uppercase tracking-[0.25em] mb-4">Elementos para tu Altar</h3>
+<h2 class="text-4xl md:text-5xl font-bold text-white">Novedades en la Tienda</h2>
+</div>
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="group cursor-pointer">
+<div class="aspect-square rounded-3xl overflow-hidden mb-4 bg-surface-dark border border-white/5 relative">
+<div class="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+<img alt="Vela Ritual" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYt-ms3_Uh9UKyuGNIEf2IUwhZF9WCmgMNMs0DOHDpu7KG9K9mB3OabFRmnT2Dd_VcUyQ_KEJuk_5rHpFZC6NURXsvwfPQduBA6qzvoebKzTl7qIuKsc4fGMqHVjhBF526lgRsRNl_T3YVm6ga0fXt8CUFzZQ7qTQyaZwaE9Ebxt_1gZxVAVCAJIYPFnhsjJDO124hbVTymwD6BJpR2sYdnmikXg6TWP2oduKJWXx2aWtohi60qnkL_5njYfCqq6oZf7WJ4xjaQdk"/>
+<button class="absolute bottom-4 left-4 right-4 bg-white text-background-dark py-3 rounded-xl font-bold text-xs opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all">
+                            Añadir al Carrito
+                        </button>
+</div>
+<h5 class="text-white font-bold">Velas de Intención</h5>
+<p class="text-primary font-bold text-sm">$15.00</p>
+</div>
+<div class="group cursor-pointer">
+<div class="aspect-square rounded-3xl overflow-hidden mb-4 bg-surface-dark border border-white/5 relative">
+<img alt="Sahumerios" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDX82p73YmWwN_HcxoqPsc1icDB3hW4F7OsD1KAnp-UxZzQ-ep9tnLvfdNvy0qnwSYqOhYr0T3YfEcMEsdSxO9dULSaH9OJoIXEm7Yo253B2YaX1jNkVmBKSnMOWsDJzJcg8Tqy69TmGVDqfS8CTOkTKZtFs6KE_b-uNYGJDWMDm5m8lAVWSbJa-xV1SuMxFt7o8s_ySD7Sxml4yKo7A-iaO2mj3N5EkSNmiUsm1s5hfmHThEw6JB4dJkF4uwYC-IQRS8ItjxY9PVA"/>
+<button class="absolute bottom-4 left-4 right-4 bg-white text-background-dark py-3 rounded-xl font-bold text-xs opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all">
+                            Añadir al Carrito
+                        </button>
+</div>
+<h5 class="text-white font-bold">Pack Sahumerios Hierbas</h5>
+<p class="text-primary font-bold text-sm">$12.00</p>
+</div>
+<div class="group cursor-pointer">
+<div class="aspect-square rounded-3xl overflow-hidden mb-4 bg-surface-dark border border-white/5 relative">
+<img alt="Cristales" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHSLRLEoTGpYk_zGCl_bV1VCDIvJybZozkqPY9T4p-eaOtRPRdK5ncUpP7OX28xx-jpW10zvGkohCZCzKjT6LYqiXKAw8aoc4ovP4ra4JcBttlRWBx4xEXmt_K2u8UFIUBZ7Z5dQV-QEt5sEU6bCICixsVYbunMHjUgeG1pO87_9ShxPW4BAUQNAyvEMQN6ochkoVgNc0GrVHRJV4qJGaULdEitkyqNXnFmrHJM08oBQaccRuTHcYF1Ry5lb7oKXRAWfzUQme5qD0"/>
+<button class="absolute bottom-4 left-4 right-4 bg-white text-background-dark py-3 rounded-xl font-bold text-xs opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all">
+                            Añadir al Carrito
+                        </button>
+</div>
+<h5 class="text-white font-bold">Cuarzo Rosa Energizado</h5>
+<p class="text-primary font-bold text-sm">$18.00</p>
+</div>
+<div class="group cursor-pointer">
+<div class="aspect-square rounded-3xl overflow-hidden mb-4 bg-surface-dark border border-white/5 relative">
+<img alt="Tarot Deck" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuApRgAs_u2nsn6nK4dtFiFjnN9jGbaGyjrd5GIW5i8BYqSAZDaNXOtvKXHh1CRBLWWutU7KN-8rIYC84J3pnb-JvtQvPVu5zdqPUY1RUuS9otwxUFY9hRtIIIzajVfHYyc3c41nYCWfP4qsR0kV_J2SV9qYZhpEk4NwHvHD5cJz6wfnLPtdvnjxf_XHba6kOwRs5MDrIkSLHR_7by2BKdOP45uidAvrNGDgbesTcv8JJhE7nLU4IdKP_U0I1DdJXu2tGK2y4RtNhSU"/>
+<button class="absolute bottom-4 left-4 right-4 bg-white text-background-dark py-3 rounded-xl font-bold text-xs opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all">
+                            Añadir al Carrito
+                        </button>
+</div>
+<h5 class="text-white font-bold">Mazo de Tarot Artístico</h5>
+<p class="text-primary font-bold text-sm">$35.00</p>
+</div>
+</div>
+<div class="mt-16 text-center">
+<button class="bg-secondary/10 hover:bg-secondary/20 text-secondary border border-secondary/20 px-10 py-4 rounded-full font-bold transition-all">
+                    Explorar Tienda Completa
+                </button>
+</div>
+</div>
+</section>
+<section class="py-32 bg-surface-accent relative" id="ebook">
+<div class="container mx-auto px-6 max-w-7xl">
+<div class="glass-panel rounded-[3rem] overflow-hidden flex flex-col lg:flex-row items-stretch">
+<div class="lg:w-1/2 relative min-h-[400px]">
+<div class="absolute inset-0 bg-primary/10 mix-blend-overlay z-10"></div>
+<div class="w-full h-full bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBb1mruujPbEl2Vk4gxguuiIZXgXUSga9c9Mby4x-wr8lxfOD1k_UmL-EOgd0xRBvRUnd3qVdjxRCpae9K_Dc1YzsJzo9HP_dHSWWdzOCiUCcs69gsUAq9F-dIcBrl9u1n9Du2qpl5ZY2gfOAi8CzNQvwmGByZAc4pgm2gaxOelo9LauqJC41i4_gNP3ni17O7YnBz9RQ1nIPXd6Ohmuw7Q6rzQJ7lUBa4MDyPvM1IvMR25EqVdDNZC6pENh5NN7CIxHlGwnbxznj8');"></div>
+<div class="absolute top-8 left-8 bg-secondary text-background-dark text-xs font-black px-4 py-2 rounded-full shadow-lg">DISPONIBLE AHORA</div>
+</div>
+<div class="lg:w-1/2 p-10 md:p-16 flex flex-col justify-center">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-primary text-3xl">menu_book</span>
+<span class="text-primary text-sm font-bold tracking-[0.3em] uppercase">Guía Digital Exclusiva</span>
+</div>
+<h2 class="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">Despierta tu Magia <br/> <span class="text-secondary">Interior</span></h2>
+<p class="text-white/70 text-lg mb-10 font-body leading-relaxed">
+                        He condensado años de estudio y práctica en este Ebook. Aprende a conectar con los ciclos lunares, realizar limpiezas energéticas en tu hogar y crear tus propios rituales de manifestación paso a paso.
+                    </p>
+<div class="flex flex-wrap items-center gap-8">
+<div>
+<span class="text-4xl font-bold text-white block">$22.00</span>
+<span class="text-white/30 text-sm line-through">$45.00 (Oferta Lanzamiento)</span>
+</div>
+<button class="bg-primary hover:bg-primary-hover text-white px-10 py-4 rounded-2xl font-bold shadow-xl shadow-primary/20 transition-all hover:scale-105 flex items-center gap-3">
+<span>Comprar y Descargar</span>
+<span class="material-symbols-outlined">download</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-32 bg-background-dark">
+<div class="container mx-auto px-6 max-w-7xl">
+<div class="text-center mb-20">
+<span class="material-symbols-outlined text-5xl text-primary opacity-30 mb-6">format_quote</span>
+<h2 class="text-4xl font-bold text-white italic">Susurros de Luz</h2>
+</div>
+<div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+<div class="glass-panel p-10 rounded-3xl relative border border-white/5">
+<div class="flex gap-1 text-secondary mb-6">
+<span class="material-symbols-outlined fill-current text-[18px]">star</span>
+<span class="material-symbols-outlined fill-current text-[18px]">star</span>
+<span class="material-symbols-outlined fill-current text-[18px]">star</span>
+<span class="material-symbols-outlined fill-current text-[18px]">star</span>
+<span class="material-symbols-outlined fill-current text-[18px]">star</span>
+</div>
+<p class="text-white/80 font-body italic mb-8 text-lg leading-relaxed">
+                        "La lectura de tarot con Camí fue un antes y un después. Me dio la claridad que buscaba y herramientas prácticas para mi día a día. Una experiencia mágica."
+                    </p>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full border border-primary/20 bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA-eT3wEJaoQQQH6T7CRqfw801YyqN4CPishE35_qPFVarQROq4tAAxE6IORg2MzMFxtai3y_OjCobkhXkZh4cl0urjfULYuskfZ6eavxBX_5olibDzUYpSaV_spViunstu6SaARCusLNT_qtvGbPq5xGOQERt1OxjFf2vBaO3GYVcnineLo2g9haXbR3DH9kfgdDTCzgqPPfyGojR5lByobrOJWQIywD8pC9SVUVE_M8iZg6jM34rUEsuQZSOizkQNWVavvHzoM_I");'></div>
+<div>
+<p class="text-white font-bold">Elena R.</p>
+<p class="text-white/40 text-xs">Barcelona, España</p>
+</div>
+</div>
+</div>
+<div class="glass-panel p-10 rounded-3xl relative border border-white/5">
+<div class="flex gap-1 text-secondary mb-6">
+<span class="material-symbols-outlined fill-current text-[18px]">star</span>
+<span class="material-symbols-outlined fill-current text-[18px]">star</span>
+<span class="material-symbols-outlined fill-current text-[18px]">star</span>
+<span class="material-symbols-outlined fill-current text-[18px]">star</span>
+<span class="material-symbols-outlined fill-current text-[18px]">star</span>
+</div>
+<p class="text-white/80 font-body italic mb-8 text-lg leading-relaxed">
+                        "La alineación energética me dejó una sensación de paz que no había sentido en años. Camí tiene un don especial para conectar y sanar."
+                    </p>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full border border-primary/20 bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBmzuHA3R82jenPwnaDtgGo8ikUMvLxG0i3CL-2z795Ynj9gNuRnL4ditvTDALmT200YlsrrWTskna4BBnoMHhgWA6N3ECPsKGZ0TpRF_HObdsDjB-xbLAXxyp4DsMEWkgTRURF8572iynTS0Br75aTp50Ce8iq3wnMux1zW_wP_aYvfLVlZ8el5BEjRmgtD5klfz5VLJbeyyTV9SCnUj54hDxvrpjk59L7fnCHQ8iMCA3LrxS2lrsJaKD2Szclk8y8SVI0xqub5T4");'></div>
+<div>
+<p class="text-white font-bold">Marcus L.</p>
+<p class="text-white/40 text-xs">Sesión Online</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-32 bg-primary relative overflow-hidden">
+<div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-30"></div>
+<div class="container mx-auto px-6 relative z-10 text-center">
+<h2 class="text-5xl md:text-6xl font-black text-white mb-8">¿Lista para comenzar tu viaje?</h2>
+<p class="text-white/90 text-xl max-w-2xl mx-auto mb-12 font-body font-light">
+                No dejes para mañana la sanación que tu alma necesita hoy. Encuentra tu luz.
+            </p>
+<div class="flex flex-col sm:flex-row gap-6 justify-center">
+<button class="bg-background-dark text-white px-12 py-5 rounded-full font-bold text-lg hover:bg-background-dark/90 transition-all shadow-2xl flex items-center justify-center gap-3">
+<span class="material-symbols-outlined">calendar_month</span>
+                    Agendar mi Sesión
+                </button>
+<button class="bg-transparent border-2 border-white text-white px-12 py-5 rounded-full font-bold text-lg hover:bg-white/10 transition-all">
+                    Explorar la Tienda
+                </button>
+</div>
+</div>
+</section>
+<footer class="bg-[#0a080c] pt-24 pb-12 border-t border-white/5">
+<div class="container mx-auto px-6 max-w-7xl">
+<div class="grid md:grid-cols-4 gap-16 mb-20">
+<div class="col-span-1 md:col-span-1">
+<div class="flex items-center gap-3 mb-8">
+<span class="material-symbols-outlined text-secondary text-3xl">flare</span>
+<h4 class="text-white text-xl font-bold">Tu Luz Mágica</h4>
+</div>
+<p class="text-white/40 text-sm leading-relaxed mb-8 font-body">
+                        Acompañándote a descubrir el poder sagrado que reside en ti a través de la sabiduría ancestral y el amor.
+                    </p>
+<div class="flex gap-4">
+<a class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-white/50 hover:bg-primary hover:text-white transition-all" href="#">
+<span class="font-bold text-xs">IG</span>
+</a>
+<a class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-white/50 hover:bg-primary hover:text-white transition-all" href="#">
+<span class="font-bold text-xs">TK</span>
+</a>
+<a class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-white/50 hover:bg-primary hover:text-white transition-all" href="#">
+<span class="font-bold text-xs">YT</span>
+</a>
+</div>
+</div>
+<div>
+<h5 class="text-white font-bold mb-8 uppercase tracking-widest text-xs">Navegación</h5>
+<ul class="flex flex-col gap-4">
+<li><a class="text-white/40 hover:text-primary transition-colors text-sm" href="#">Inicio</a></li>
+<li><a class="text-white/40 hover:text-primary transition-colors text-sm" href="#servicios">Servicios</a></li>
+<li><a class="text-white/40 hover:text-primary transition-colors text-sm" href="#tienda">Tienda Holística</a></li>
+<li><a class="text-white/40 hover:text-primary transition-colors text-sm" href="#ebook">Ebook Magia</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-white font-bold mb-8 uppercase tracking-widest text-xs">Soporte y Legal</h5>
+<ul class="flex flex-col gap-4">
+<li><a class="text-white/40 hover:text-primary transition-colors text-sm" href="#">Contacto</a></li>
+<li><a class="text-white/40 hover:text-primary transition-colors text-sm" href="#">Política de Privacidad</a></li>
+<li><a class="text-white/40 hover:text-primary transition-colors text-sm" href="#">Términos y Condiciones</a></li>
+<li><a class="text-white/40 hover:text-primary transition-colors text-sm" href="#">Envíos y Cambios</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-white font-bold mb-8 uppercase tracking-widest text-xs">Newsletter Mística</h5>
+<p class="text-white/40 text-sm mb-6 font-body">Recibe consejos espirituales y ofertas exclusivas cada luna llena.</p>
+<form class="flex flex-col gap-3">
+<input class="bg-white/5 border border-white/10 rounded-xl px-5 py-3 text-sm text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none" placeholder="Tu email sagrado" type="email"/>
+<button class="bg-primary hover:bg-primary-hover text-white text-sm font-bold py-3 rounded-xl transition-all">Suscribirme</button>
+</form>
+</div>
+</div>
+<div class="border-t border-white/5 pt-12 flex flex-col md:flex-row justify-between items-center gap-6 text-center">
+<p class="text-white/20 text-xs font-body">© 2024 Tu Luz Mágica by Camí. Todos los derechos reservados.</p>
+<div class="flex items-center gap-4 text-white/20 text-xs font-body">
+<span>Hecho con amor y magia</span>
+<span class="material-symbols-outlined text-primary text-sm fill-current">favorite</span>
+</div>
+</div>
+</div>
+</footer>
+</div>
+
+</body></html>
