@@ -34,7 +34,15 @@ export function CheckoutForm() {
                 }
             }
         } catch (err: any) {
-            setAuthError(err.message)
+            if (err.message === 'Failed to fetch') {
+                setAuthError('Error de conexión. La base de datos puede estar pausada. Actívala en el panel de Supabase.')
+            } else if (err.message.includes('Invalid login credentials')) {
+                setAuthError('Credenciales incorrectas. Verifica tu correo y contraseña.')
+            } else if (err.message.includes('User already registered')) {
+                setAuthError('Este correo ya está registrado. Por favor, inicia sesión.')
+            } else {
+                setAuthError(err.message)
+            }
         } finally {
             setLoading(false)
         }

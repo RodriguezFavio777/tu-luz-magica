@@ -66,6 +66,27 @@ export async function POST(request: Request) {
                     // Start Time is in "YYYY-MM-DD HH:mm" format or similar
                     // We need to parse it to ISO for Google
                     const startTime = new Date(item.bookingData.startTime)
+
+                    // If the Date is invalid (e.g. Rituals without specific time), skip Calendar Event but create DB record safely
+                    if (isNaN(startTime.getTime())) {
+                        console.log('API Checkout: Invalid booking start time, skipping Google Calendar event for', item.name)
+                        // We can still create the booking record with a default time or skip it based on requirements
+                        // For now, let's just make sure it doesn't crash:
+                        const { error: bookingError } = await supabase
+                            .from('bookings')
+                            .insert({
+                                user_id: user_id || null,
+                                product_id: item.productId,
+                                start_time: new Date().toISOString(), // Fallback to current time
+                                end_time: new Date(Date.now() + 60 * 60000).toISOString(),
+                                status: 'Confirmado',
+                                notes: item.bookingData.notes || 'Velación o limpieza (sin fecha/hora específica)',
+                                price: item.price
+                            })
+                        if (bookingError) throw bookingError;
+                        continue; // Skip the rest of calendar logic
+                    }
+
                     const duration = item.durationMinutes || (item.name.toLowerCase().includes('ritual') ? 30 : 60) // Rituals 30min default, others 60
                     const endTime = new Date(startTime.getTime() + duration * 60000)
 
@@ -140,6 +161,32 @@ export async function POST(request: Request) {
         }
 
         console.log('API Checkout: Success');
+
+        // 3. Send Emails via Resend
+        if (email) {
+            try {
+                const isBooking = items.some((i: any) => i.type === 'service')
+                await import('@/actions/sendMail').then(module => {
+                    module.sendOrderConfirmation(
+                        email,
+                        fullName || 'Cliente Sagrado',
+                        order.id,
+                        items.map((i: any) => ({
+                            name: i.name,
+                            quantity: i.quantity,
+                            price: i.price,
+                            type: i.type
+                        })),
+                        total,
+                        requires_shipping ? `${shipping_address}, ${shipping_city}, ${shipping_postal_code}` : 'No requiere (Servicio/Digital)',
+                        isBooking
+                    )
+                })
+            } catch (e) {
+                console.error("Failed to send email", e)
+            }
+        }
+
         return NextResponse.json({ success: true, orderId: order.id, calendarEvents })
 
     } catch (error: any) {

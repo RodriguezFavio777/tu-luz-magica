@@ -197,7 +197,7 @@ export function Navbar() {
                         {/* User Auth */}
                         <UserMenu />
 
-                        <Link href="/servicios" className="hidden sm:flex items-center gap-2 bg-[#f472b6] hover:bg-[#ec4899] text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-[0_4px_20px_rgba(244,114,182,0.3)] hover:scale-105 active:scale-95">
+                        <Link href="/servicios" className="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-[0_4px_20px_rgba(244,114,182,0.3)] hover:scale-105 active:scale-95">
                             <Calendar className="w-4 h-4" />
                             Reservar Sesión
                         </Link>

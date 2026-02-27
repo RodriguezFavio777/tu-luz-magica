@@ -34,7 +34,13 @@ export default function RegisterPage() {
         })
 
         if (error) {
-            setError(error.message)
+            if (error.message === 'Failed to fetch') {
+                setError('Error de conexión. Tu base de datos puede estar pausada por inactividad. Inicia sesión en Supabase para restaurarla.')
+            } else if (error.message.includes('User already registered')) {
+                setError('Este correo ya está registrado. Por favor, inicia sesión.')
+            } else {
+                setError(error.message)
+            }
             setLoading(false)
         } else {
             setSuccess(true)

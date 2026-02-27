@@ -187,7 +187,7 @@ export default async function HomePage() {
                   title={service.name}
                   description={service.description || ""}
                   price={service.price}
-                  duration={service.duration_minutes ? `${service.duration_minutes} min` : "Consultar"}
+                  duration={"Consultar"}
                   image={service.image_url || "https://ui.shadcn.com/placeholder.svg"}
                   icon={<Hexagon className="w-6 h-6" />}
                   isPopular

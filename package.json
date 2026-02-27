@@ -11,8 +11,11 @@
   },
   "dependencies": {
     "@mercadopago/sdk-react": "^1.0.7",
+    "@react-email/components": "^1.0.8",
+    "@react-email/render": "^2.0.4",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.93.3",
+    "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
     "framer-motion": "^12.29.2",
     "googleapis": "^171.4.0",
@@ -21,6 +24,7 @@
     "puppeteer": "^24.36.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "resend": "^6.9.2",
     "use-debounce": "^10.1.0",
     "zustand": "^5.0.10"
   },

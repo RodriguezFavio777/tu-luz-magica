@@ -1,23 +1,28 @@
+import { Sparkles } from 'lucide-react'
+
 export default function Loading() {
     return (
-        <div className="fixed inset-0 z-100 bg-[#0a080c] flex flex-col items-center justify-center min-h-screen w-full">
-            {/* Custom Spinner */}
-            <div className="relative w-20 h-20 mb-8">
-                {/* Outer Ring */}
-                <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-[#f472b6] animate-spin" style={{ animationDuration: '1.5s' }}></div>
+        <div className="fixed inset-0 z-100 bg-[#0a080c] flex flex-col items-center justify-center min-h-[100dvh] w-full">
+            {/* Custom Spinner - Professional Circular Ring */}
+            <div className="relative w-20 h-20 mb-8 flex items-center justify-center">
+                {/* Background Track */}
+                <svg className="absolute inset-0 w-full h-full text-white/5" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" strokeWidth="4" />
+                </svg>
 
-                {/* Middle Ring */}
-                <div className="absolute inset-3 rounded-full border-2 border-transparent border-r-[#d63384] animate-spin" style={{ animationDuration: '2s', animationDirection: 'reverse' }}></div>
+                {/* Animated Progress Ring */}
+                <svg className="absolute inset-0 w-full h-full text-primary animate-spin" viewBox="0 0 100 100" style={{ animationDuration: '2s' }}>
+                    <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" strokeWidth="4" strokeDasharray="80 200" strokeLinecap="round" />
+                </svg>
 
-                {/* Inner Ring */}
-                <div className="absolute inset-6 rounded-full border-2 border-transparent border-b-[#ffd700] animate-spin" style={{ animationDuration: '1s' }}></div>
-
-                {/* Center Glow */}
-                <div className="absolute inset-0 bg-[#f472b6]/10 blur-xl rounded-full animate-pulse"></div>
+                {/* Center Icon */}
+                <div className="text-secondary/80 animate-pulse">
+                    <Sparkles size={28} />
+                </div>
             </div>
 
-            <p className="text-white/60 font-display uppercase tracking-[0.4em] text-xs animate-pulse">
-                Cargando Magia...
+            <p className="text-white/60 font-display font-bold uppercase tracking-[0.2em] text-xs">
+                CONECTANDO CON EL UNIVERSO...
             </p>
         </div>
     )

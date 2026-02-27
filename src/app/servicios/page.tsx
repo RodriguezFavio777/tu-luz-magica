@@ -65,10 +65,10 @@ export default async function ServicesPage({
         }
     }
 
-    if (duration) {
-        query = query.eq('duration_minutes', parseInt(duration))
-    }
+    // Remove duration query since 'duration_minutes' column doesn't exist on 'products' table right now
+    // TODO: Ideally 'duration' should be fetched from a JSONB metadata field in the future if needed for filtering
 
+    // We only execute query
     const { data: services, error } = await query
 
     if (error) {
@@ -118,7 +118,7 @@ export default async function ServicesPage({
                                 title={service.name}
                                 description={service.description || ""}
                                 price={service.price}
-                                duration={service.duration_minutes ? `${service.duration_minutes} min` : "Consultar"}
+                                duration={"Consultar"} // Fallback as duration_minutes is unavailable
                                 image={service.image_url || "/placeholder-service.jpg"}
                                 icon={<Hexagon className="w-6 h-6" />}
                                 isPopular={false} // logic could be added here

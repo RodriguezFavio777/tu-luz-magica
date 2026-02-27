@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Calendar, Clock, Check } from 'lucide-react'
+import { ModernCalendar } from '@/components/ui/ModernCalendar'
 
 interface BookingModalProps {
     isOpen: boolean
@@ -13,23 +14,23 @@ interface BookingModalProps {
 }
 
 export function BookingModal({ isOpen, onClose, onConfirm, serviceName, enableTimeSelection = true }: BookingModalProps) {
-    const [date, setDate] = useState('')
+    const [selectedDate, setSelectedDate] = useState<Date | null>(null)
     const [time, setTime] = useState('')
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        // If time selection is disabled, use a default time (e.g., "00:00") or handle as date-only
         const textTime = enableTimeSelection ? time : "Todo el día";
 
-        if (date && (textTime)) {
-            onConfirm(date, textTime)
+        if (selectedDate && (textTime)) {
+            // Formateamos mes/dia
+            const isoDate = selectedDate.toISOString().split('T')[0]
+            onConfirm(isoDate, textTime)
             onClose()
         }
     }
 
-    // Generate time slots (10:00 to 18:00)
     const timeSlots = [
-        "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"
+        "09:00 AM", "10:30 AM", "01:00 PM", "03:30 PM", "05:00 PM", "06:30 PM"
     ];
 
     return (
@@ -48,80 +49,82 @@ export function BookingModal({ isOpen, onClose, onConfirm, serviceName, enableTi
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="relative w-full max-w-md bg-surface border border-white/10 rounded-3xl p-6 shadow-2xl overflow-hidden"
+                        className="relative w-full max-w-4xl bg-surface border border-white/10 rounded-3xl p-8 shadow-2xl overflow-hidden"
                     >
                         <button
                             onClick={onClose}
-                            className="absolute top-4 right-4 text-white/40 hover:text-white transition-colors z-10"
+                            className="absolute top-6 right-6 text-white/40 hover:text-white transition-colors z-10 bg-black/20 p-2 rounded-full"
                         >
-                            <X className="w-6 h-6" />
+                            <X className="w-5 h-5" />
                         </button>
 
-                        <div className="mb-6">
-                            <h3 className="text-xl font-bold text-white mb-1">Agendar Sesión</h3>
-                            <p className="text-primary text-sm font-bold">{serviceName}</p>
+                        <div className="mb-8 flex items-center gap-4">
+                            <div className="p-3 bg-primary/20 rounded-xl">
+                                <Calendar className="w-6 h-6 text-primary" />
+                            </div>
+                            <div>
+                                <h3 className="text-2xl font-bold text-white font-display">Selecciona Fecha y Hora</h3>
+                                <p className="text-primary text-sm font-bold uppercase tracking-widest">{serviceName}</p>
+                            </div>
                         </div>
 
-
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            <div className="space-y-2">
-                                <label className="flex items-center gap-2 text-sm font-bold text-white/60 uppercase tracking-wider">
-                                    <Calendar className="w-4 h-4 text-primary" />
-                                    Fecha de Inicio
-                                </label>
-                                <input
-                                    type="date"
-                                    required
-                                    min={new Date().toISOString().split('T')[0]}
-                                    value={date}
-                                    onChange={(e) => setDate(e.target.value)}
-                                    className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-hidden focus:border-primary/50 transition-colors scheme-dark"
+                        <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-10 items-stretch">
+                            {/* Left Side: Custom Calendar */}
+                            <div className="flex-1">
+                                <ModernCalendar
+                                    selectedDate={selectedDate}
+                                    onDateSelect={setSelectedDate}
                                 />
                             </div>
 
-                            {enableTimeSelection ? (
-                                <div className="space-y-2">
-                                    <label className="flex items-center gap-2 text-sm font-bold text-white/60 uppercase tracking-wider">
-                                        <Clock className="w-4 h-4 text-primary" />
-                                        Horario Disponible
-                                    </label>
-                                    <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto pr-1 custom-scrollbar">
-                                        {timeSlots.map((slot) => (
-                                            <button
-                                                key={slot}
-                                                type="button"
-                                                onClick={() => setTime(slot)}
-                                                className={`py-2 px-3 rounded-lg text-sm font-bold transition-all border ${time === slot
-                                                    ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20'
-                                                    : 'bg-white/5 text-white/60 border-transparent hover:bg-white/10 hover:text-white'
-                                                    }`}
-                                            >
-                                                {slot}
-                                            </button>
-                                        ))}
+                            {/* Right Side: Times */}
+                            <div className="flex-1 flex flex-col justify-between">
+                                {enableTimeSelection ? (
+                                    <div className="space-y-6 flex-1">
+                                        <label className="flex items-center gap-2 text-sm font-bold text-white uppercase tracking-wider font-display">
+                                            <Clock className="w-4 h-4 text-primary" />
+                                            HORARIOS DISPONIBLES
+                                        </label>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            {timeSlots.map((slot) => (
+                                                <button
+                                                    key={slot}
+                                                    type="button"
+                                                    onClick={() => setTime(slot)}
+                                                    className={`py-4 px-6 rounded-full text-sm font-bold transition-all border ${time === slot
+                                                        ? 'bg-primary text-white border-primary shadow-[0_0_20px_rgba(244,114,182,0.4)] scale-105'
+                                                        : 'bg-black/20 text-white/70 border-white/10 hover:bg-white/5 hover:text-white'
+                                                        }`}
+                                                >
+                                                    {slot}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        <p className="text-white/40 text-xs italic mt-6">
+                                            Zona horaria: Buenos Aires (GMT-3)
+                                        </p>
                                     </div>
-                                </div>
-                            ) : (
-                                <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 flex items-center gap-3">
-                                    <Clock className="w-5 h-5 text-primary" />
-                                    <p className="text-xs text-white/80 leading-relaxed">
-                                        Este servicio se agenda por día completo. La hora de inicio será coordinada post-reserva vía WhatsApp.
-                                    </p>
-                                </div>
-                            )}
+                                ) : (
+                                    <div className="bg-primary/10 border border-primary/20 rounded-2xl p-6 flex flex-col justify-center items-center gap-4 h-full text-center">
+                                        <Clock className="w-8 h-8 text-primary" />
+                                        <h4 className="text-white font-bold text-lg">Servicio de Día Completo</h4>
+                                        <p className="text-sm text-white/70 leading-relaxed max-w-xs">
+                                            Este servicio (ritual/limpieza) requiere que se coordine por fuera una vez seleccionado el día, ya que consume energía a lo largo de varias horas. Me pondré en contacto contigo por WhatsApp.
+                                        </p>
+                                    </div>
+                                )}
 
-                            <button
-                                type="submit"
-                                disabled={!date || (enableTimeSelection && !time)}
-                                className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group"
-                            >
-                                <Check className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                                Confirmar Reserva
-                            </button>
-
-                            <p className="text-center text-white/30 text-[10px] uppercase tracking-wider">
-                                * Horarios de Buenos Aires (GMT-3)
-                            </p>
+                                <div className="mt-8 pt-8 border-t border-white/10">
+                                    <button
+                                        type="submit"
+                                        disabled={!selectedDate || (enableTimeSelection && !time)}
+                                        className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-5 rounded-full transition-all shadow-[0_10px_40px_-10px_rgba(244,114,182,0.4)] flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed group active:scale-95"
+                                    >
+                                        <Check className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                                        Confirmar Selección
+                                    </button>
+                                </div>
+                            </div>
                         </form>
                     </motion.div>
                 </div>
@@ -129,3 +132,4 @@ export function BookingModal({ isOpen, onClose, onConfirm, serviceName, enableTi
         </AnimatePresence>
     )
 }
+

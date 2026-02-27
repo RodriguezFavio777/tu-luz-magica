@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { ShoppingBag, Check, Clock, Calendar, Star, ShieldCheck, Zap } from 'lucide-react';
 import { BookingModal } from '@/components/services/BookingModal';
 import { useCart } from '@/hooks/useCart';
+import { useAuth } from '@/hooks/useAuth';
+import { useRouter } from 'next/navigation';
 import { SERVICE_DETAILS, ServiceDetail } from '@/data/serviceVariants';
 import * as motion from 'framer-motion/client';
 
@@ -14,7 +16,9 @@ interface ServiceInfoClientProps {
 
 export default function ServiceInfoClient({ service, details }: ServiceInfoClientProps) {
     const [isBookingOpen, setIsBookingOpen] = useState(false);
-    const { addItem } = useCart();
+    const { items, addItem } = useCart();
+    const { user } = useAuth();
+    const router = useRouter();
 
     // Initialize variant from SERVICE_DETAILS or fallback to legacy service.variants if needed
     const variants = details?.variants || [];
@@ -50,7 +54,7 @@ export default function ServiceInfoClient({ service, details }: ServiceInfoClien
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 relative">
 
             {/* Sticky Header: Price & Duration */}
-            <div className="sticky top-[74px] z-30 bg-[#120d14]/95 backdrop-blur-xl py-4 border-b border-white/5 rounded-b-2xl -mx-4 px-4 shadow-2xl transition-all duration-300">
+            <div className="sticky top-[74px] z-30 bg-background/95 backdrop-blur-xl py-4 border-b border-white/5 rounded-b-2xl -mx-4 px-4 shadow-2xl transition-all duration-300">
                 <div className="grid grid-cols-2 gap-4">
                     <div className="bg-surface p-4 rounded-xl border border-white/5 shadow-inner relative overflow-hidden group">
                         <div className="absolute inset-0 bg-linear-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -153,13 +157,38 @@ export default function ServiceInfoClient({ service, details }: ServiceInfoClien
 
                 {/* Final Booking Button (Static) */}
                 <div className="pt-8 pb-4">
-                    <button
-                        onClick={() => setIsBookingOpen(true)}
-                        className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-5 rounded-2xl transition-all shadow-[0_10px_40px_-10px_rgba(244,114,182,0.4)] flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-95 border-t border-white/20 group"
-                    >
-                        <ShoppingBag className="w-6 h-6 group-hover:animate-bounce" />
-                        <span className="text-xl">Reservar Ahora</span>
-                    </button>
+                    {(() => {
+                        const hasThisService = items.some(i => i.productId === service.id && (!selectedVariant || i.variantName === selectedVariant.name));
+
+                        if (hasThisService) {
+                            return (
+                                <button
+                                    onClick={() => router.push('/checkout')}
+                                    className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-5 rounded-2xl transition-all shadow-[0_10px_40px_-10px_rgba(34,197,94,0.4)] flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-95 border-t border-white/20 group"
+                                >
+                                    <Check className="w-6 h-6 group-hover:scale-110 transition-transform" />
+                                    <span className="text-xl">Añadido al carrito (Ir a Pagar)</span>
+                                </button>
+                            )
+                        }
+
+                        return (
+                            <button
+                                onClick={() => {
+                                    if (!user) {
+                                        const returnUrl = encodeURIComponent(window.location.pathname)
+                                        router.push(`/ingresar?redirect=${returnUrl}`)
+                                        return
+                                    }
+                                    setIsBookingOpen(true)
+                                }}
+                                className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-5 rounded-2xl transition-all shadow-[0_10px_40px_-10px_rgba(244,114,182,0.4)] flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-95 border-t border-white/20 group"
+                            >
+                                <ShoppingBag className="w-6 h-6 group-hover:animate-bounce" />
+                                <span className="text-xl">Reservar Ahora</span>
+                            </button>
+                        )
+                    })()}
                     <p className="text-center text-[10px] text-white/30 mt-3 uppercase tracking-widest">
                         Pago 100% Seguro y Encriptado
                     </p>

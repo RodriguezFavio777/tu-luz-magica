@@ -61,13 +61,9 @@ export const AddToCartButton: React.FC<AddToCartProps> = ({ product, type, booki
         e.stopPropagation()
 
         if (!user) {
-            // Require login to add to cart
-            if (!user) {
-                // Require login to add to cart, but save return path
-                const returnUrl = encodeURIComponent(window.location.pathname)
-                router.push(`/ingresar?redirect=${returnUrl}`)
-                return
-            }
+            // Require login to add to cart, save return path
+            const returnUrl = encodeURIComponent(window.location.pathname)
+            router.push(`/ingresar?redirect=${returnUrl}`)
             return
         }
 
@@ -110,12 +106,16 @@ export const AddToCartButton: React.FC<AddToCartProps> = ({ product, type, booki
                     {quantity === 1 ? <Trash2 className="w-4 h-4 text-red-400" /> : <Minus className="w-4 h-4" />}
                 </button>
                 <span className="font-bold text-white flex-1 text-center">{quantity}</span>
-                <button
-                    onClick={(e) => handleUpdateQuantity(e, 1)}
-                    className="p-3 hover:bg-white/10 rounded-lg text-white transition-colors"
-                >
-                    <Plus className="w-4 h-4" />
-                </button>
+                {type !== 'service' ? (
+                    <button
+                        onClick={(e) => handleUpdateQuantity(e, 1)}
+                        className="p-3 hover:bg-white/10 rounded-lg text-white transition-colors"
+                    >
+                        <Plus className="w-4 h-4" />
+                    </button>
+                ) : (
+                    <div className="p-3 w-10"></div>
+                )}
             </div>
         )
     }
