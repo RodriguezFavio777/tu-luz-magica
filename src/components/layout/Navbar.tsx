@@ -52,7 +52,7 @@ function UserMenu() {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-[#1d1520] border border-white/10 rounded-xl shadow-xl py-2 z-50">
+                <div className="absolute right-0 mt-2 w-48 bg-surface border border-white/10 rounded-xl shadow-xl py-2 z-50">
                     <div className="px-4 py-3 border-b border-white/5">
                         <p className="text-white text-sm font-bold truncate">{user.user_metadata.full_name}</p>
                         <p className="text-white/40 text-xs truncate">{user.email}</p>
@@ -66,9 +66,9 @@ function UserMenu() {
                         Mi Perfil
                     </Link>
                     <button
-                        onClick={() => {
-                            // clearCart() // Disabled by user request
-                            signOut()
+                        onClick={async () => {
+                            useCartStore.getState().clearCart()
+                            await signOut()
                             setIsOpen(false)
                             router.push('/') // Redirect to home
                             router.refresh() // Ensure clean state
@@ -94,7 +94,7 @@ function HydratedBadge({ count }: { count: number }) {
     if (!mounted) return null
 
     return (
-        <span className="absolute -top-1 -right-1 bg-[#f472b6] text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-[0_0_15px_rgba(244,114,182,0.4)]">
+        <span className="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-[0_0_15px_rgba(244,114,182,0.4)]">
             {count}
         </span>
     )
@@ -143,7 +143,7 @@ export function Navbar() {
         <>
             <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />
 
-            <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'bg-[#120d14]/80 backdrop-blur-xl border-b border-white/5 py-4' : 'bg-transparent py-6'
+            <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'bg-background/80 backdrop-blur-xl border-b border-white/5 py-4' : 'bg-transparent py-6'
                 }`}>
                 <div className="max-w-[1280px] mx-auto px-6 flex items-center justify-between">
                     {/* Logo */}
@@ -173,8 +173,8 @@ export function Navbar() {
                                 key={link.path}
                                 href={link.path}
                                 className={`text-sm font-medium transition-colors ${isActive(link.path)
-                                    ? 'text-[#f472b6] font-bold'
-                                    : 'text-white/70 hover:text-[#f472b6]'
+                                    ? 'text-primary font-bold'
+                                    : 'text-white/70 hover:text-primary'
                                     }`}
                             >
                                 {link.name}
@@ -213,12 +213,12 @@ export function Navbar() {
 
                 {/* Mobile Menu */}
                 {mobileMenuOpen && (
-                    <div className="md:hidden absolute top-full left-0 w-full bg-[#120d14]/95 backdrop-blur-2xl border-b border-white/10 p-6 flex flex-col gap-6 animate-in slide-in-from-top duration-300">
+                    <div className="md:hidden absolute top-full left-0 w-full bg-background/95 backdrop-blur-2xl border-b border-white/10 p-6 flex flex-col gap-6 animate-in slide-in-from-top duration-300">
                         <Link href="/" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-white/90">Inicio</Link>
                         <Link href="/servicios" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-white/90">Servicios</Link>
                         <Link href="/productos" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-white/90">Tienda</Link>
                         <Link href="/sobre-mi" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-white/90">Sobre Mí</Link>
-                        <Link href="/servicios" onClick={() => setMobileMenuOpen(false)} className="w-full bg-[#f472b6] text-white py-4 rounded-xl font-bold shadow-lg shadow-[#f472b6]/20 text-center uppercase tracking-widest text-xs">
+                        <Link href="/servicios" onClick={() => setMobileMenuOpen(false)} className="w-full bg-primary text-white py-4 rounded-xl font-bold shadow-lg shadow-primary/20 text-center uppercase tracking-widest text-xs">
                             Reservar Sesión
                         </Link>
                     </div>

@@ -40,29 +40,28 @@ export function useCart() {
     }, [user, storeAddItem])
 
     const removeItem = useCallback(async (itemId: string) => {
+        const itemToRemove = items.find(i => i.id === itemId);
         storeRemoveItem(itemId) // Optimistic update
-        if (user) {
-            // NOTE: We are removing by PRODUCT ID (itemId is productId in current impl)
-            // Ideally we should pass cart_item_id, but our store uses productId as ID often.
-            // Ensure logic matches.
+        if (user && itemToRemove) {
             try {
-                await CartService.removeFromCart(user.id, itemId)
+                await CartService.removeFromCart(user.id, itemToRemove.productId)
             } catch (error) {
                 console.error('Error syncing removing item from cart:', error)
             }
         }
-    }, [user, storeRemoveItem])
+    }, [user, storeRemoveItem, items])
 
     const updateQuantity = useCallback(async (itemId: string, quantity: number) => {
+        const itemToUpdate = items.find(i => i.id === itemId);
         storeUpdateQuantity(itemId, quantity) // Optimistic update
-        if (user) {
+        if (user && itemToUpdate) {
             try {
-                await CartService.updateQuantity(user.id, itemId, quantity)
+                await CartService.updateQuantity(user.id, itemToUpdate.productId, quantity)
             } catch (error) {
                 console.error('Error syncing update quantity:', error)
             }
         }
-    }, [user, storeUpdateQuantity])
+    }, [user, storeUpdateQuantity, items])
 
     const clearCart = useCallback(async () => {
         storeClearCart()
