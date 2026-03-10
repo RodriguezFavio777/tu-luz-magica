@@ -2,13 +2,11 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Lock, Mail, User, Loader, ArrowLeft } from 'lucide-react'
 import { TriquetaLogo } from '@/components/ui/TriquetaLogo'
 
 export default function RegisterPage() {
-    const router = useRouter()
     const [fullName, setFullName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -64,8 +62,8 @@ export default function RegisterPage() {
 
     if (success) {
         return (
-            <main className="min-h-screen bg-[#0a080c] flex items-center justify-center p-4 relative overflow-hidden pt-32">
-                <div className="relative z-10 w-full max-w-md bg-[#1d1520] border border-white/10 p-8 rounded-3xl shadow-2xl text-center">
+            <main className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden pt-32">
+                <div className="relative z-10 w-full max-w-md bg-surface border border-white/10 p-8 rounded-3xl shadow-2xl text-center">
                     <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
                         <Mail className="w-8 h-8 text-green-400" />
                     </div>
@@ -82,14 +80,14 @@ export default function RegisterPage() {
     }
 
     return (
-        <main className="min-h-screen bg-[#0a080c] flex items-center justify-center p-4 relative overflow-hidden pt-32">
+        <main className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden pt-32">
             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 pointer-events-none"></div>
 
             {/* Background Glows */}
             <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
             <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-secondary/10 rounded-full blur-[100px] pointer-events-none" />
 
-            <div className="relative z-10 w-full max-w-md bg-[#1d1520] border border-white/10 p-8 rounded-3xl shadow-2xl">
+            <div className="relative z-10 w-full max-w-md bg-surface border border-white/10 p-8 rounded-3xl shadow-2xl">
                 <Link href="/" className="inline-flex items-center gap-2 text-white/40 hover:text-white mb-6 transition-colors">
                     <ArrowLeft className="w-4 h-4" />
                     <span className="text-xs uppercase tracking-wider">Volver</span>
@@ -113,7 +111,7 @@ export default function RegisterPage() {
                                 required
                                 value={fullName}
                                 onChange={(e) => setFullName(e.target.value)}
-                                className="w-full bg-[#151018] border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-hidden focus:border-primary/50 transition-colors"
+                                className="w-full bg-surface-accent border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-hidden focus:border-primary/50 transition-colors"
                                 placeholder="Tu Nombre Mágico"
                             />
                         </div>
@@ -128,7 +126,7 @@ export default function RegisterPage() {
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="w-full bg-[#151018] border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-hidden focus:border-primary/50 transition-colors"
+                                className="w-full bg-surface-accent border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-hidden focus:border-primary/50 transition-colors"
                                 placeholder="tu@email.com"
                             />
                         </div>
@@ -143,7 +141,7 @@ export default function RegisterPage() {
                                 required
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="w-full bg-[#151018] border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-hidden focus:border-primary/50 transition-colors"
+                                className="w-full bg-surface-accent border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-hidden focus:border-primary/50 transition-colors"
                                 placeholder="••••••••"
                                 minLength={6}
                             />
@@ -170,7 +168,7 @@ export default function RegisterPage() {
                         <div className="w-full border-t border-white/10"></div>
                     </div>
                     <div className="relative flex justify-center text-xs uppercase tracking-wider">
-                        <span className="bg-[#1d1520] px-4 text-white/30 font-bold">O regístrate con</span>
+                        <span className="bg-surface px-4 text-white/30 font-bold">O regístrate con</span>
                     </div>
                 </div>
 

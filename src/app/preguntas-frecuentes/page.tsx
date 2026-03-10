@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-    HelpCircle, ChevronDown, Sparkles, BookOpen, Clock, ShoppingBag, CreditCard, MessageSquare
+    HelpCircle, ChevronDown, BookOpen, Clock, ShoppingBag, CreditCard, MessageSquare
 } from 'lucide-react'
 import Link from 'next/link'
 import { siteConfig } from '@/config/site'
@@ -56,7 +56,7 @@ const faqs = [
             },
             {
                 q: "¿Qué hago si mi pedido llega dañado?",
-                a: "Escríbeme inmediatamente a hola@tuluzmagica.com con fotos del estado del paquete y del producto. Me encargaré de reponerlo o gestionarte una solución mágica."
+                a: "Escríbeme inmediatamente a cami@tuluzmagica.com con fotos del estado del paquete y del producto. Me encargaré de reponerlo o gestionarte una solución mágica."
             }
         ]
     },
@@ -66,7 +66,7 @@ const faqs = [
         questions: [
             {
                 q: "¿Qué métodos de pago aceptan?",
-                a: "Aceptamos todas las tarjetas de crédito y débito a través de Mercado Pago, así como transferencias bancarias. Para clientes internacionales, el pago es vía PayPal."
+                a: "Aceptamos transferencias bancarias y coordinaremos los detalles del pago directamente por WhatsApp. Para clientes internacionales, el pago es vía PayPal."
             },
             {
                 q: "¿Puedo cancelar o reprogramar una sesión?",

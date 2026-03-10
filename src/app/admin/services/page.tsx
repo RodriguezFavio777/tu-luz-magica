@@ -1,58 +1,73 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase'
-import { Eye, Trash2, Edit, Search, Plus, Hexagon } from 'lucide-react'
+import React, { useEffect, useState, useCallback } from 'react'
+import { Trash2, Edit, Search, Plus, Hexagon } from 'lucide-react'
 import Link from 'next/link'
+import { useToast } from '@/context/ToastContext'
+import { deleteService, getAdminServices } from '@/lib/actions/serviceActions'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
+import { Service } from '@/services/ServiceService'
+
+interface AdminService extends Service {
+    service_categories: { name: string } | null
+}
 
 export default function AdminServices() {
-    const [services, setServices] = useState<any[]>([])
+    const { showToast } = useToast()
+    const [services, setServices] = useState<AdminService[]>([])
     const [loading, setLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState('')
 
-    useEffect(() => {
-        fetchServices()
-    }, [])
+    // Modal State
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+    const [serviceToDelete, setServiceToDelete] = useState<string | null>(null)
 
-    const fetchServices = async () => {
+    const fetchServices = useCallback(async () => {
         try {
             setLoading(true)
-            const { data, error } = await supabase
-                .from('products')
-                .select('*, categories(name)')
-                .eq('type', 'service')
-                .order('created_at', { ascending: false })
-
-            if (error) throw error
+            const data = await getAdminServices()
             setServices(data || [])
         } catch (error) {
             console.error('Error fetching services:', error)
+            showToast('Error al cargar servicios')
         } finally {
             setLoading(false)
         }
+    }, [showToast])
+
+    useEffect(() => {
+        fetchServices()
+    }, [fetchServices])
+
+    const handleDeleteClick = (serviceId: string) => {
+        setServiceToDelete(serviceId)
+        setIsDeleteModalOpen(true)
     }
 
-    const deleteService = async (serviceId: string) => {
-        if (!confirm('¿Estás seguro de que quieres eliminar este servicio? Esta acción no se puede deshacer.')) return
+    const deleteServiceHandler = async () => {
+        if (!serviceToDelete) return
 
         try {
-            const { error } = await supabase
-                .from('products')
-                .delete()
-                .eq('id', serviceId)
+            const result = await deleteService(serviceToDelete)
 
-            if (error) throw error
-
-            setServices(services.filter(s => s.id !== serviceId))
-        } catch (error) {
+            if (result.success) {
+                setServices(services.filter(s => s.id !== serviceToDelete))
+                showToast('Servicio eliminado exitosamente')
+            } else {
+                throw new Error(result.error)
+            }
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Error desconocido'
             console.error('Error deleting service:', error)
-            alert('Hubo un problema al intentar eliminar el servicio.')
+            showToast('Hubo un problema al intentar eliminar el servicio: ' + message, 'error')
+        } finally {
+            setServiceToDelete(null)
         }
     }
 
     const filteredServices = services.filter(s =>
         s.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        s.categories?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+        s.service_categories?.name?.toLowerCase().includes(searchTerm.toLowerCase())
     )
 
     return (
@@ -112,7 +127,7 @@ export default function AdminServices() {
                                 </tr>
                             ) : (
                                 filteredServices.map((service) => (
-                                    <tr key={service.id} className="hover:bg-white/[0.02] transition-colors group">
+                                    <tr key={service.id} className="hover:bg-white/2 transition-colors group">
                                         <td className="p-6">
                                             <div className="flex items-center gap-4">
                                                 <div className="w-12 h-12 flex items-center justify-center bg-primary/10 rounded-xl border border-primary/20 text-primary">
@@ -131,7 +146,7 @@ export default function AdminServices() {
 
                                         <td className="p-6">
                                             <span className="bg-white/5 border border-white/10 text-white/70 px-3 py-1 rounded-full text-xs font-medium">
-                                                {service.categories?.name || 'Varios'}
+                                                {service.service_categories?.name || 'Varios'}
                                             </span>
                                         </td>
 
@@ -157,7 +172,7 @@ export default function AdminServices() {
                                                 <Edit className="w-4 h-4" />
                                             </Link>
                                             <button
-                                                onClick={() => deleteService(service.id)}
+                                                onClick={() => handleDeleteClick(service.id)}
                                                 className="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 rounded-lg transition-colors inline-flex"
                                                 title="Eliminar Servicio"
                                             >
@@ -171,6 +186,16 @@ export default function AdminServices() {
                     </table>
                 </div>
             </div>
+
+            <ConfirmModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={deleteServiceHandler}
+                title="¿Eliminar Servicio?"
+                message="¿Estás seguro de que quieres eliminar este servicio de forma permanente? Esta acción no se puede deshacer."
+                confirmText="Eliminar"
+                variant="danger"
+            />
         </div>
     )
 }

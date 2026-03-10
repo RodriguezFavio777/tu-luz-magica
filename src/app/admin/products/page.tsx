@@ -1,58 +1,74 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase'
-import { Eye, Trash2, Edit, Search, Plus, Package } from 'lucide-react'
+import React, { useEffect, useState, useCallback } from 'react'
+import { Trash2, Edit, Search, Plus, Package } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
+import { useToast } from '@/context/ToastContext'
+import { deleteProduct, getAdminProducts } from '@/lib/actions/productActions'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
+import { Product } from '@/services/ProductService'
+
+interface AdminProduct extends Product {
+    product_categories: { name: string } | null
+}
 
 export default function AdminProducts() {
-    const [products, setProducts] = useState<any[]>([])
+    const { showToast } = useToast()
+    const [products, setProducts] = useState<AdminProduct[]>([])
     const [loading, setLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState('')
 
-    useEffect(() => {
-        fetchProducts()
-    }, [])
+    // Modal State
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+    const [productToDelete, setProductToDelete] = useState<string | null>(null)
 
-    const fetchProducts = async () => {
+    const fetchProducts = useCallback(async () => {
         try {
             setLoading(true)
-            const { data, error } = await supabase
-                .from('products')
-                .select('*, categories(name)')
-                .eq('type', 'physical')
-                .order('created_at', { ascending: false })
-
-            if (error) throw error
+            const data = await getAdminProducts()
             setProducts(data || [])
         } catch (error) {
             console.error('Error fetching products:', error)
+            showToast('Error al cargar productos')
         } finally {
             setLoading(false)
         }
+    }, [showToast])
+
+    useEffect(() => {
+        fetchProducts()
+    }, [fetchProducts])
+
+    const handleDeleteClick = (productId: string) => {
+        setProductToDelete(productId)
+        setIsDeleteModalOpen(true)
     }
 
-    const deleteProduct = async (productId: string) => {
-        if (!confirm('¿Estás seguro de que quieres eliminar este producto? Esta acción no se puede deshacer.')) return
+    const deleteProductHandler = async () => {
+        if (!productToDelete) return
 
         try {
-            const { error } = await supabase
-                .from('products')
-                .delete()
-                .eq('id', productId)
+            const result = await deleteProduct(productToDelete)
 
-            if (error) throw error
-
-            setProducts(products.filter(p => p.id !== productId))
-        } catch (error) {
+            if (result.success) {
+                setProducts(products.filter(p => p.id !== productToDelete))
+                showToast('Producto eliminado exitosamente')
+            } else {
+                throw new Error(result.error)
+            }
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Error desconocido'
             console.error('Error deleting product:', error)
-            alert('Hubo un problema al intentar eliminar el producto.')
+            showToast('Hubo un problema al intentar eliminar el producto: ' + message, 'error')
+        } finally {
+            setProductToDelete(null)
         }
     }
 
     const filteredProducts = products.filter(p =>
         p.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.categories?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+        p.product_categories?.name?.toLowerCase().includes(searchTerm.toLowerCase())
     )
 
     return (
@@ -112,12 +128,12 @@ export default function AdminProducts() {
                                 </tr>
                             ) : (
                                 filteredProducts.map((product) => (
-                                    <tr key={product.id} className="hover:bg-white/[0.02] transition-colors group">
+                                    <tr key={product.id} className="hover:bg-white/2 transition-colors group">
                                         <td className="p-6">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 overflow-hidden flex-shrink-0">
+                                                <div className="relative w-12 h-12 rounded-xl bg-white/5 border border-white/10 overflow-hidden shrink-0">
                                                     {product.image_url ? (
-                                                        <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
+                                                        <Image src={product.image_url} alt={product.name} fill className="object-cover" />
                                                     ) : (
                                                         <div className="w-full h-full flex items-center justify-center text-white/20">
                                                             <Package className="w-6 h-6" />
@@ -137,7 +153,7 @@ export default function AdminProducts() {
 
                                         <td className="p-6">
                                             <span className="bg-white/5 border border-white/10 text-white/70 px-3 py-1 rounded-full text-xs font-medium">
-                                                {product.categories?.name || 'Sin Categoría'}
+                                                {product.product_categories?.name || 'Sin Categoría'}
                                             </span>
                                         </td>
 
@@ -166,7 +182,7 @@ export default function AdminProducts() {
                                                 <Edit className="w-4 h-4" />
                                             </Link>
                                             <button
-                                                onClick={() => deleteProduct(product.id)}
+                                                onClick={() => handleDeleteClick(product.id)}
                                                 className="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 rounded-lg transition-colors inline-flex"
                                                 title="Eliminar Pedido"
                                             >
@@ -180,6 +196,16 @@ export default function AdminProducts() {
                     </table>
                 </div>
             </div>
+
+            <ConfirmModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={deleteProductHandler}
+                title="¿Eliminar Producto?"
+                message="¿Estás seguro de que quieres eliminar este producto? Esta acción no se puede deshacer y el producto desaparecerá de la tienda."
+                confirmText="Eliminar"
+                variant="danger"
+            />
         </div>
     )
 }

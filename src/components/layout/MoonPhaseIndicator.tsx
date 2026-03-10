@@ -1,16 +1,16 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { getMoonPhase } from '@/utils/moonPhase'
 import { motion, AnimatePresence } from 'framer-motion'
 
-export function MoonPhaseIndicator() {
-    const [phaseData, setPhaseData] = useState<{ phase: string; icon: string; description: string } | null>(null)
-    const [showTooltip, setShowTooltip] = useState(false)
+import { useHydrated } from '@/hooks/useHydrated'
 
-    useEffect(() => {
-        setPhaseData(getMoonPhase())
-    }, [])
+export function MoonPhaseIndicator() {
+    const [showTooltip, setShowTooltip] = useState(false)
+    const isMounted = useHydrated()
+
+    const phaseData = isMounted ? getMoonPhase() : null
 
     if (!phaseData) return null
 
@@ -33,9 +33,9 @@ export function MoonPhaseIndicator() {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
-                        className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-48 bg-[#1d1520]/90 backdrop-blur-md border border-white/10 p-3 rounded-xl shadow-xl z-50 text-center pointer-events-none"
+                        className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-48 bg-surface/90 backdrop-blur-md border border-white/10 p-3 rounded-xl shadow-xl z-50 text-center pointer-events-none"
                     >
-                        <p className="text-[#f472b6] font-bold text-xs uppercase mb-1">{phaseData.phase}</p>
+                        <p className="text-primary font-bold text-xs uppercase mb-1">{phaseData.phase}</p>
                         <p className="text-white/70 text-[10px] leading-tight">{phaseData.description}</p>
                     </motion.div>
                 )}

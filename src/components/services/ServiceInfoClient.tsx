@@ -1,15 +1,15 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ShoppingBag, Check, Clock, Calendar, Star, ShieldCheck, Zap } from 'lucide-react';
 import { BookingModal } from '@/components/services/BookingModal';
 import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
-import { SERVICE_DETAILS, ServiceDetail } from '@/data/serviceVariants';
-import * as motion from 'framer-motion/client';
+import { ServiceDetail } from '@/data/serviceVariants';
 
 interface ServiceInfoClientProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     service: any;
     details: ServiceDetail | undefined;
 }
@@ -17,20 +17,26 @@ interface ServiceInfoClientProps {
 export default function ServiceInfoClient({ service, details }: ServiceInfoClientProps) {
     const [isBookingOpen, setIsBookingOpen] = useState(false);
     const { items, addItem } = useCart();
-    const { user } = useAuth();
+    const { user, loading } = useAuth();
     const router = useRouter();
 
-    // Initialize variant from SERVICE_DETAILS or fallback to legacy service.variants if needed
-    const variants = details?.variants || [];
+    // Initialize variants and features from DB with static fallback
+    const variants = (service.variants && service.variants.length > 0) ? service.variants : (details?.variants || []);
+    const features = (service.includes && service.includes.length > 0) ? service.includes : (details?.features || []);
 
     const [selectedVariant, setSelectedVariant] = useState(variants.length > 0 ? variants[0] : null);
 
     const currentPrice = selectedVariant ? selectedVariant.price : service.price;
-    const currentDuration = selectedVariant ? selectedVariant.duration : (details?.preparationTime || 'Consultar');
+
+    // Improved duration display: Priority DB -> Variant -> Static
+    const currentDuration = selectedVariant
+        ? `${selectedVariant.duration} ${selectedVariant.duration_unit || 'minutos'}`
+        : (service.duration_minutes ? `${service.duration_minutes} ${service.duration_unit || 'minutos'}` : (details?.preparationTime || 'Consultar'));
 
     // Determine if time selection is needed based on category (Rituals = Date only, Readings = Date & Time)
     const categoryName = service.category?.name?.toLowerCase() || '';
-    const isRitual = categoryName.includes('ritual') || categoryName.includes('limpieza');
+    const nameLower = service.name?.toLowerCase() || '';
+    const isRitual = categoryName.includes('ritual') || categoryName.includes('limpieza') || nameLower.includes('ritual') || nameLower.includes('velación') || nameLower.includes('endulzamiento');
     const enableTimeSelection = !isRitual;
 
     const handleBookingConfirm = (date: string, time: string) => {
@@ -90,7 +96,7 @@ export default function ServiceInfoClient({ service, details }: ServiceInfoClien
                             Selecciona tu Experiencia
                         </label>
                         <div className="grid gap-3">
-                            {variants.map((v) => (
+                            {variants.map((v: { id: string, name: string, price: number, duration: string | number, duration_unit?: string }) => (
                                 <button
                                     key={v.id}
                                     onClick={() => setSelectedVariant(v)}
@@ -106,7 +112,9 @@ export default function ServiceInfoClient({ service, details }: ServiceInfoClien
                                         {selectedVariant?.id === v.id && <Check className="w-5 h-5 text-primary drop-shadow-[0_0_5px_rgba(244,114,182,0.8)]" />}
                                     </div>
                                     <div className="flex justify-between items-center text-xs">
-                                        <span className="text-white/40 font-medium">{v.duration}</span>
+                                        <span className="text-white/40 font-medium">
+                                            {v.duration} {v.duration_unit || 'minutos'}
+                                        </span>
                                         <span className={`font-bold ${selectedVariant?.id === v.id ? 'text-primary' : 'text-white/50'}`}>
                                             ${v.price.toLocaleString('es-AR')}
                                         </span>
@@ -118,7 +126,7 @@ export default function ServiceInfoClient({ service, details }: ServiceInfoClien
                 )}
 
                 {/* Includes Section */}
-                {details?.features && (
+                {features.length > 0 && (
                     <div className="bg-surface border border-white/5 rounded-2xl p-6 relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
                         <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-3 font-display">
@@ -126,7 +134,7 @@ export default function ServiceInfoClient({ service, details }: ServiceInfoClien
                             ¿Qué incluye este servicio?
                         </h3>
                         <ul className="grid gap-4">
-                            {details.features.map((feature, i) => (
+                            {features.map((feature: string, i: number) => (
                                 <li key={i} className="flex items-start gap-3 text-white/70 text-sm leading-relaxed">
                                     <span className="mt-1 w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_10px_#f472b6]" />
                                     {feature}
@@ -144,7 +152,7 @@ export default function ServiceInfoClient({ service, details }: ServiceInfoClien
                             Condiciones Importantes
                         </h3>
                         <p className="text-white/60 text-sm leading-relaxed italic">
-                            "{details.conditions}"
+                            &quot;{details.conditions}&quot;
                         </p>
                         {details.modality?.includes('Online') && (
                             <div className="mt-4 flex items-center gap-2 text-xs text-white/40 bg-white/5 p-3 rounded-lg">
@@ -175,6 +183,7 @@ export default function ServiceInfoClient({ service, details }: ServiceInfoClien
                         return (
                             <button
                                 onClick={() => {
+                                    if (loading) return;
                                     if (!user) {
                                         const returnUrl = encodeURIComponent(window.location.pathname)
                                         router.push(`/ingresar?redirect=${returnUrl}`)
@@ -182,10 +191,17 @@ export default function ServiceInfoClient({ service, details }: ServiceInfoClien
                                     }
                                     setIsBookingOpen(true)
                                 }}
-                                className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-5 rounded-2xl transition-all shadow-[0_10px_40px_-10px_rgba(244,114,182,0.4)] flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-95 border-t border-white/20 group"
+                                disabled={loading}
+                                className={`w-full bg-primary hover:bg-primary-hover text-white font-bold py-5 rounded-2xl transition-all shadow-[0_10px_40px_-10px_rgba(244,114,182,0.4)] flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-95 border-t border-white/20 group ${loading ? 'opacity-70 cursor-wait' : ''}`}
                             >
-                                <ShoppingBag className="w-6 h-6 group-hover:animate-bounce" />
-                                <span className="text-xl">Reservar Ahora</span>
+                                {loading ? (
+                                    <div className="w-6 h-6 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                                ) : (
+                                    <ShoppingBag className="w-6 h-6 group-hover:animate-bounce" />
+                                )}
+                                <span className="text-xl">
+                                    {loading ? 'Cargando...' : 'Reservar Ahora'}
+                                </span>
                             </button>
                         )
                     })()}
@@ -200,7 +216,9 @@ export default function ServiceInfoClient({ service, details }: ServiceInfoClien
                 onClose={() => setIsBookingOpen(false)}
                 onConfirm={handleBookingConfirm}
                 serviceName={selectedVariant ? `${service.name} - ${selectedVariant.name}` : service.name}
+                serviceId={service.id}
                 enableTimeSelection={enableTimeSelection}
+                isRitual={isRitual}
             />
         </div>
     );

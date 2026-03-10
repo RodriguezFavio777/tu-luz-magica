@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useCart } from '@/hooks/useCart'
 import { CartItemCard } from './CartComponents'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
+
 
 interface CartDrawerProps {
     isOpen: boolean

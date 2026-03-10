@@ -39,12 +39,20 @@ export async function getCalendarEvents(startTime: string, endTime: string) {
     }
 }
 
-export async function createCalendarEvent(summary: string, description: string, startDateTime: string, endDateTime: string, attendees: { email: string }[] = []) {
+export async function createCalendarEvent(
+    summary: string,
+    description: string,
+    startDateTime: string,
+    endDateTime: string,
+    attendees: { email: string }[] = [],
+    transparency: 'opaque' | 'transparent' = 'opaque'
+) {
     try {
         const calendar = getCalendar();
         const event = {
             summary,
             description,
+            transparency,
             start: {
                 dateTime: startDateTime,
                 timeZone: 'America/Argentina/Buenos_Aires', // Adjust as needed

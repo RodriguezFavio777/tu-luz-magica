@@ -6,6 +6,7 @@ import { AddToCartButton } from '@/components/cart/CartComponents';
 import { VariantSelector } from './VariantSelector';
 
 interface ProductInfoClientProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     product: any;
     displayImages: string[];
 }

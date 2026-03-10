@@ -44,7 +44,7 @@ export default function PoliticaPrivacidad() {
                     <div className="bg-white/5 border border-white/10 rounded-3xl p-8 backdrop-blur-md">
                         <h3 className="text-xl font-bold text-white mb-4 font-display">Tus Derechos</h3>
                         <p className="text-white/70 leading-relaxed mb-4">
-                            Tienes derecho a acceder, corregir o eliminar tu información personal de nuestra base de datos en cualquier momento. Solo escríbenos a <a href="mailto:hola@tuluzmagica.com" className="text-primary hover:underline">hola@tuluzmagica.com</a>.
+                            Tienes derecho a acceder, corregir o eliminar tu información personal de nuestra base de datos en cualquier momento. Solo escríbenos a <a href="mailto:cami@tuluzmagica.com" className="text-primary hover:underline">cami@tuluzmagica.com</a>.
                         </p>
                         <div className="text-xs text-white/30 italic text-right mt-6 border-t border-white/5 pt-4">
                             Última actualización: 10 de Febrero de 2026
@@ -56,7 +56,7 @@ export default function PoliticaPrivacidad() {
     );
 }
 
-function PolicySection({ icon, title, content }: { icon: any, title: string, content: any }) {
+function PolicySection({ icon, title, content }: { icon: React.ReactNode, title: string, content: React.ReactNode }) {
     return (
         <section className="bg-[#151018] border border-white/5 rounded-3xl p-8 hover:border-primary/30 transition-colors duration-500 shadow-lg group">
             <div className="flex items-start gap-6">

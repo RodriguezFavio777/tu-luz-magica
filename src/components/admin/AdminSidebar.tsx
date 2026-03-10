@@ -2,9 +2,10 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { LayoutDashboard, ShoppingBag, Calendar, Package, Mail, LogOut, Hexagon } from 'lucide-react'
+import { LayoutDashboard, ShoppingBag, Calendar, Package, Mail, LogOut, Hexagon, Tags, MessageCircle } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
+import { TriquetaLogo } from '@/components/ui/TriquetaLogo'
 
 export function AdminSidebar() {
     const pathname = usePathname()
@@ -18,6 +19,8 @@ export function AdminSidebar() {
         { name: 'Turnos', href: '/admin/bookings', icon: Calendar },
         { name: 'Productos', href: '/admin/products', icon: Package },
         { name: 'Servicios', href: '/admin/services', icon: Hexagon },
+        { name: 'Categorías', href: '/admin/categories', icon: Tags },
+        { name: 'Reseñas', href: '/admin/reviews', icon: MessageCircle },
         { name: 'Mensajes', href: '/admin/messages', icon: Mail },
     ]
 
@@ -43,9 +46,7 @@ export function AdminSidebar() {
 
                 {/* Logo Area */}
                 <div className="hidden lg:flex items-center gap-3 p-8 border-b border-white/5">
-                    <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <Hexagon className="w-5 h-5 text-primary drop-shadow-[0_0_8px_rgba(244,114,182,0.8)]" />
-                    </div>
+                    <TriquetaLogo size={40} className="shrink-0" />
                     <div>
                         <h1 className="text-white font-bold font-display tracking-wide leading-tight">Tu Luz Mágica</h1>
                         <p className="text-primary text-[10px] uppercase tracking-widest font-bold">Panel de Control</p>
@@ -64,8 +65,8 @@ export function AdminSidebar() {
                                 href={link.href}
                                 onClick={() => setMobileOpen(false)}
                                 className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${isActive
-                                        ? 'bg-primary/10 text-primary border border-primary/20 shadow-inner'
-                                        : 'text-white/50 hover:bg-white/5 hover:text-white'
+                                    ? 'bg-primary/10 text-primary border border-primary/20 shadow-inner'
+                                    : 'text-white/50 hover:bg-white/5 hover:text-white'
                                     }`}
                             >
                                 <Icon className={`w-5 h-5 ${isActive ? 'drop-shadow-[0_0_5px_rgba(244,114,182,0.5)]' : ''}`} />
@@ -76,7 +77,14 @@ export function AdminSidebar() {
                 </div>
 
                 {/* Footer Actions */}
-                <div className="p-4 border-t border-white/5">
+                <div className="p-4 border-t border-white/5 space-y-2">
+                    <Link
+                        href="/"
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/5 hover:text-white transition-colors font-medium"
+                    >
+                        <LayoutDashboard className="w-5 h-5" />
+                        Ir al Sitio
+                    </Link>
                     <button
                         onClick={() => signOut()}
                         className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-400 hover:bg-red-400/10 transition-colors font-medium"

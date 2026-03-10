@@ -1,8 +1,7 @@
-'use client';
-
-import Link from 'next/link';
-import Image from 'next/image';
-import { Heart, Instagram, Youtube, Music2 } from 'lucide-react';
+'use client'
+import React from 'react'
+import Link from 'next/link'
+import { Heart, Instagram, Youtube } from 'lucide-react';
 import { TriquetaLogo } from '@/components/ui/TriquetaLogo';
 import { siteConfig } from '@/config/site';
 
@@ -106,7 +105,7 @@ export function Footer() {
                         </ul>
                     </div>
                     <div className="text-white/30 text-sm flex flex-col justify-end">
-                        <p className="italic">"Donde la magia se encuentra con el alma."</p>
+                        <p className="italic">&quot;Donde la magia se encuentra con el alma.&quot;</p>
                     </div>
                 </div>
                 <div className="border-t border-white/5 pt-12 flex flex-col md:flex-row justify-between items-center gap-6 text-center">

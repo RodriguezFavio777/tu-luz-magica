@@ -3,21 +3,40 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { ShoppingCart, Menu, X, Sparkles, Calendar, LogOut, User as UserIcon } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { useCartBadge, useCart } from '@/hooks/useCart'
+import { useCartBadge } from '@/hooks/useCart'
 import { useAuth } from '@/hooks/useAuth'
 import { CartService } from '@/services/cart.service'
 import { useCartStore } from '@/store/useCartStore'
 import { TriquetaLogo } from '@/components/ui/TriquetaLogo'
 import { CartDrawer } from '@/components/cart/CartDrawer'
 import { MoonPhaseIndicator } from '@/components/layout/MoonPhaseIndicator'
+import { useHydrated } from '@/hooks/useHydrated'
 
 function UserMenu() {
-    const { user, signInWithGoogle, signOut } = useAuth()
-    // Removed clearCart to persist cart across sessions locally (MVP) - User Request
+    const { user, role, signOut } = useAuth()
     const router = useRouter()
+    const pathname = usePathname()
     const [isOpen, setIsOpen] = useState(false)
+    const [isLoggingOut, setIsLoggingOut] = useState(false)
+    const menuRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                setIsOpen(false)
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => document.removeEventListener('mousedown', handleClickOutside)
+    }, [])
+
+    const [prevPath, setPrevPath] = useState(pathname)
+    if (pathname !== prevPath) {
+        setPrevPath(pathname)
+        setIsOpen(false)
+    }
 
     if (!user) {
         return (
@@ -31,12 +50,13 @@ function UserMenu() {
     }
 
     return (
-        <div className="relative">
+        <div className="relative" ref={menuRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="flex items-center gap-2 p-1 rounded-full border border-white/10 hover:border-primary/50 transition-colors"
+                aria-expanded={isOpen}
             >
-                {user.user_metadata.avatar_url ? (
+                {user.user_metadata?.avatar_url ? (
                     <Image
                         src={user.user_metadata.avatar_url}
                         alt="Avatar"
@@ -52,31 +72,51 @@ function UserMenu() {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-surface border border-white/10 rounded-xl shadow-xl py-2 z-50">
-                    <div className="px-4 py-3 border-b border-white/5">
-                        <p className="text-white text-sm font-bold truncate">{user.user_metadata.full_name}</p>
-                        <p className="text-white/40 text-xs truncate">{user.email}</p>
+                <div className="absolute right-0 mt-2 w-48 bg-surface border border-white/10 rounded-xl shadow-xl py-2 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                    <div className="px-4 py-3 border-b border-white/5 bg-white/5">
+                        <p className="text-white text-sm font-bold truncate">{user.user_metadata?.full_name || 'Usuario'}</p>
+                        <p className="text-white/40 text-[10px] truncate">{user.email}</p>
                     </div>
                     <Link
                         href="/perfil"
-                        onClick={() => setIsOpen(false)}
-                        className="w-full text-left px-4 py-3 text-white hover:bg-white/5 text-xs font-bold uppercase tracking-wider flex items-center gap-2"
+                        className="w-full text-left px-4 py-3 text-white hover:bg-white/5 text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-colors"
                     >
-                        <UserIcon className="w-3 h-3" />
+                        <UserIcon className="w-3 h-3 text-primary" />
                         Mi Perfil
                     </Link>
+                    {role === 'admin' && (
+                        <Link
+                            href="/admin"
+                            className="w-full text-left px-4 py-3 text-secondary hover:bg-white/5 text-xs font-bold uppercase tracking-wider flex items-center gap-2 border-t border-white/5 transition-colors"
+                        >
+                            <Sparkles className="w-3 h-3" />
+                            Panel Admin
+                        </Link>
+                    )}
                     <button
                         onClick={async () => {
-                            useCartStore.getState().clearCart()
-                            await signOut()
-                            setIsOpen(false)
-                            router.push('/') // Redirect to home
-                            router.refresh() // Ensure clean state
+                            try {
+                                setIsLoggingOut(true)
+                                useCartStore.getState().clearCart()
+                                await signOut()
+                                setIsOpen(false)
+                                router.push('/')
+                                router.refresh()
+                            } catch (e) {
+                                console.error('Logout failed', e)
+                            } finally {
+                                setIsLoggingOut(false)
+                            }
                         }}
-                        className="w-full text-left px-4 py-3 text-red-400 hover:bg-white/5 text-xs font-bold uppercase tracking-wider flex items-center gap-2 border-t border-white/5"
+                        disabled={isLoggingOut}
+                        className={`w-full text-left px-4 py-3 text-red-400 hover:bg-red-500/10 text-xs font-bold uppercase tracking-wider flex items-center gap-2 border-t border-white/5 transition-colors ${isLoggingOut ? 'opacity-50 cursor-wait' : ''}`}
                     >
-                        <LogOut className="w-3 h-3" />
-                        Cerrar Sesión
+                        {isLoggingOut ? (
+                            <div className="w-3 h-3 rounded-full border-2 border-red-400 border-t-transparent animate-spin" />
+                        ) : (
+                            <LogOut className="w-3 h-3" />
+                        )}
+                        {isLoggingOut ? 'Cerrando...' : 'Cerrar Sesión'}
                     </button>
                 </div>
             )}
@@ -85,11 +125,7 @@ function UserMenu() {
 }
 
 function HydratedBadge({ count }: { count: number }) {
-    const [mounted, setMounted] = useState(false)
-
-    useEffect(() => {
-        setMounted(true)
-    }, [])
+    const mounted = useHydrated()
 
     if (!mounted) return null
 
@@ -130,6 +166,13 @@ export function Navbar() {
 
         syncCart()
     }, [user, loading])
+
+    const [prevPath, setPrevPath] = useState(pathname)
+    if (pathname !== prevPath) {
+        setPrevPath(pathname)
+        setMobileMenuOpen(false)
+        setCartOpen(false)
+    }
 
     useEffect(() => {
         const handleScroll = () => {
@@ -213,7 +256,7 @@ export function Navbar() {
 
                 {/* Mobile Menu */}
                 {mobileMenuOpen && (
-                    <div className="md:hidden absolute top-full left-0 w-full bg-background/95 backdrop-blur-2xl border-b border-white/10 p-6 flex flex-col gap-6 animate-in slide-in-from-top duration-300">
+                    <div className="md:hidden absolute top-full left-0 w-full bg-surface/95 backdrop-blur-2xl border-b border-white/10 p-6 flex flex-col gap-6 animate-in slide-in-from-top duration-300">
                         <Link href="/" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-white/90">Inicio</Link>
                         <Link href="/servicios" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-white/90">Servicios</Link>
                         <Link href="/productos" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-white/90">Tienda</Link>

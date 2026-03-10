@@ -5,6 +5,7 @@ import { AddToCartButton } from '@/components/cart/CartComponents'
 import { Calendar, Clock, Flame } from 'lucide-react'
 
 interface BookingFormProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     product: any
 }
 

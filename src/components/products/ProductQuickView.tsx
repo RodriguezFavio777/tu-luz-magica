@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ChevronLeft, ChevronRight } from 'lucide-react'
@@ -17,16 +18,22 @@ interface ProductQuickViewProps {
 export function ProductQuickView({ isOpen, onClose, product }: ProductQuickViewProps) {
     const [selectedVariant, setSelectedVariant] = useState<string | null>(null)
     const [currentImageIndex, setCurrentImageIndex] = useState(0)
+    const [mounted, setMounted] = useState(false)
 
-    // Reset state when opening new product
     useEffect(() => {
+        setMounted(true)
+    }, [])
+
+    const [prevIsOpen, setPrevIsOpen] = useState(isOpen)
+    if (isOpen !== prevIsOpen) {
+        setPrevIsOpen(isOpen)
         if (isOpen) {
             setSelectedVariant(null)
             setCurrentImageIndex(0)
         }
-    }, [isOpen, product])
+    }
 
-    if (!product) return null
+    if (!product || !mounted) return null
 
     // Combine main image + additional images
     const images = [
@@ -46,10 +53,10 @@ export function ProductQuickView({ isOpen, onClose, product }: ProductQuickViewP
         setCurrentImageIndex((prev) => (prev - 1 + displayImages.length) % displayImages.length)
     }
 
-    return (
+    const modalContent = (
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6" style={{ pointerEvents: 'auto' }}>
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -62,7 +69,7 @@ export function ProductQuickView({ isOpen, onClose, product }: ProductQuickViewP
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        className="relative w-full max-w-5xl bg-[#1d1520] border border-white/10 rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row max-h-[90vh]"
+                        className="relative w-full max-w-5xl bg-surface border border-white/10 rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row max-h-[90vh]"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <button
@@ -88,7 +95,7 @@ export function ProductQuickView({ isOpen, onClose, product }: ProductQuickViewP
                                             src={displayImages[currentImageIndex]}
                                             alt={product.name}
                                             fill
-                                            className="object-cover"
+                                            className="object-contain"
                                             sizes="(max-width: 768px) 100vw, 50vw"
                                         />
                                     </motion.div>
@@ -126,7 +133,7 @@ export function ProductQuickView({ isOpen, onClose, product }: ProductQuickViewP
                         </div>
 
                         {/* Info Section */}
-                        <div className="md:w-2/5 p-8 md:p-10 overflow-y-auto flex flex-col bg-[#1d1520]">
+                        <div className="md:w-2/5 p-8 md:p-10 overflow-y-auto flex flex-col bg-surface">
                             {/* Category Badge */}
                             <div className="inline-flex mb-4">
                                 <span className="bg-white/5 border border-white/10 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest text-secondary">
@@ -185,4 +192,6 @@ export function ProductQuickView({ isOpen, onClose, product }: ProductQuickViewP
             )}
         </AnimatePresence>
     )
+
+    return createPortal(modalContent, document.body)
 }

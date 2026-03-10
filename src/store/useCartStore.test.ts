@@ -1,5 +1,5 @@
 /**
- * Hybrid Cart Store - Usage Examples
+ * Hybrid Cart Store - Usage Examples & Integration Validation
  * 
  * This file demonstrates how the cart handles different scenarios:
  * 1. Services only (no shipping required)
@@ -76,11 +76,10 @@ export const testServicesOnly = () => {
     addTarotReading()
     addRitual()
 
-    console.log('=== SCENARIO 1: Services Only ===')
-    console.log('Requires Shipping:', requiresShipping()) // false ✅
-    console.log('Has Services:', hasServices()) // true
-    console.log('Has Physical Products:', hasPhysicalProducts()) // false
-    console.log('Expected: NO shipping address required')
+    // Validations
+    if (requiresShipping()) throw new Error('Scenario 1: Should NOT require shipping')
+    if (!hasServices()) throw new Error('Scenario 1: Should have services')
+    if (hasPhysicalProducts()) throw new Error('Scenario 1: Should NOT have physical products')
 }
 
 // SCENARIO 2: Cart with ONLY physical products
@@ -90,11 +89,10 @@ export const testPhysicalOnly = () => {
     clearCart()
     addCrystal()
 
-    console.log('=== SCENARIO 2: Physical Products Only ===')
-    console.log('Requires Shipping:', requiresShipping()) // true ✅
-    console.log('Has Services:', hasServices()) // false
-    console.log('Has Physical Products:', hasPhysicalProducts()) // true
-    console.log('Expected: Shipping address REQUIRED')
+    // Validations
+    if (!requiresShipping()) throw new Error('Scenario 2: SHOULD require shipping')
+    if (hasServices()) throw new Error('Scenario 2: Should NOT have services')
+    if (!hasPhysicalProducts()) throw new Error('Scenario 2: SHOULD have physical products')
 }
 
 // SCENARIO 3: MIXED cart (services + physical products)
@@ -105,12 +103,11 @@ export const testMixedCart = () => {
     addTarotReading() // Service
     addCrystal()     // Physical product
 
-    console.log('=== SCENARIO 3: Mixed Cart ===')
-    console.log('Requires Shipping:', requiresShipping()) // true ✅
-    console.log('Has Services:', hasServices()) // true
-    console.log('Has Physical Products:', hasPhysicalProducts()) // true
-    console.log('Subtotal:', subtotal()) // 8500 ARS
-    console.log('Expected: Shipping address REQUIRED (because of crystal)')
+    // Validations
+    if (!requiresShipping()) throw new Error('Scenario 3: SHOULD require shipping')
+    if (!hasServices()) throw new Error('Scenario 3: SHOULD have services')
+    if (!hasPhysicalProducts()) throw new Error('Scenario 3: SHOULD have physical products')
+    if (subtotal() !== 8500) throw new Error(`Scenario 3: Subtotal mismatch, expected 8500, got ${subtotal()}`)
 }
 
 // SCENARIO 4: Update booking data for a service
@@ -121,15 +118,16 @@ export const testBookingUpdate = () => {
     addTarotReading()
 
     // User selects a time slot
-    updateBookingData('service-tarot-001', {
+    updateBookingData('temp-1', {
         startTime: '2026-02-01T15:00:00Z',
         endTime: '2026-02-01T16:00:00Z',
         notes: 'Primera consulta, enfoque en amor y trabajo',
     })
 
-    console.log('=== SCENARIO 4: Booking Data Update ===')
-    console.log('Booking Data:', items()[0].bookingData)
-    console.log('Expected: Booking data should be populated')
+    const updatedItem = items[0]
+    if (updatedItem.bookingData?.startTime !== '2026-02-01T15:00:00Z') {
+        throw new Error('Scenario 4: Booking data not updated correctly')
+    }
 }
 
 // SCENARIO 5: Quantity management
@@ -139,22 +137,27 @@ export const testQuantityManagement = () => {
     clearCart()
     addCrystal()
 
-    console.log('=== SCENARIO 5: Quantity Management ===')
-    console.log('Initial quantity:', itemCount()) // 1
+    if (itemCount() !== 1) throw new Error('Scenario 5: Initial count should be 1')
 
-    updateQuantity('product-crystal-001', 3)
-    console.log('After update to 3:', itemCount()) // 3
-    console.log('Subtotal:', subtotal()) // 10500 ARS (3500 * 3)
+    updateQuantity('temp-2', 3)
+    if (itemCount() !== 3) throw new Error(`Scenario 5: Count should be 3, got ${itemCount()}`)
+    if (subtotal() !== 10500) throw new Error(`Scenario 5: Subtotal mismatch, expected 10500, got ${subtotal()}`)
 
-    updateQuantity('product-crystal-001', 0)
-    console.log('After update to 0:', itemCount()) // 0 (item removed)
+    updateQuantity('temp-2', 0)
+    if (itemCount() !== 0) throw new Error(`Scenario 5: Count should be 0 after removal, got ${itemCount()}`)
 }
 
 // Run all tests
 export const runAllTests = () => {
-    testServicesOnly()
-    testPhysicalOnly()
-    testMixedCart()
-    testBookingUpdate()
-    testQuantityManagement()
+    try {
+        testServicesOnly()
+        testPhysicalOnly()
+        testMixedCart()
+        testBookingUpdate()
+        testQuantityManagement()
+        // No console.log allowed, using silence as success or error throw
+    } catch (err) {
+        console.error('Cart Tests Failed:', err)
+        throw err
+    }
 }

@@ -41,22 +41,33 @@ export default async function ProfilePage() {
     }
 
     // Fetch Orders
-    const { data: orders } = await supabase
+    const { data: orders, error: ordersError } = await supabase
         .from('orders')
         .select(`
             *,
             items:order_items (
                 *,
                 product:products (
+                    name,
                     image_url,
                     images,
-                    description,
-                    type
+                    description
+                ),
+                service:services (
+                    name,
+                    image_url,
+                    description
                 )
             )
         `)
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
+
+    if (ordersError) {
+        console.error('❌ Error fetching orders for profile:', ordersError)
+    }
+
+    const safeOrders = orders || []
 
     return (
         <main className="min-h-screen bg-[#0a080c] pt-32 pb-20 relative overflow-hidden">
@@ -72,7 +83,7 @@ export default async function ProfilePage() {
 
                 <h1 className="text-4xl font-bold text-white font-display mb-8">Mi Cuenta</h1>
 
-                <ProfileDashboard user={user} profile={profile} orders={orders || []} />
+                <ProfileDashboard user={user} profile={profile} orders={safeOrders} />
             </div>
         </main>
     )

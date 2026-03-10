@@ -56,7 +56,7 @@ export default function TerminosCondiciones() {
     );
 }
 
-function TermSection({ icon, title, content }: { icon: any, title: string, content: string }) {
+function TermSection({ icon, title, content }: { icon: React.ReactNode, title: string, content: string }) {
     return (
         <section className="bg-[#151018] border border-white/5 rounded-3xl p-8 hover:border-primary/30 transition-colors duration-500 shadow-lg group">
             <div className="flex items-start gap-6">

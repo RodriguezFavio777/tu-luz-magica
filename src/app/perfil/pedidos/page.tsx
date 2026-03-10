@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/hooks/useAuth'
-import { Loader2, Package, Calendar, MapPin, DollarSign, ChevronRight } from 'lucide-react'
+import { Loader2, Package, Calendar, MapPin, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -24,6 +24,9 @@ interface OrderItem {
     quantity: number
     unit_price: number
     product_id: string
+    selected_variant?: {
+        name: string
+    } | null
     product?: {
         image_url: string | null
         images: string[] | null
@@ -55,6 +58,7 @@ export default function OrderHistoryPage() {
                         quantity,
                         unit_price,
                         product_id,
+                        selected_variant,
                         product:products (
                             image_url,
                             images,
@@ -69,7 +73,7 @@ export default function OrderHistoryPage() {
             if (error) {
                 console.error('Error fetching orders:', error)
             } else {
-                setOrders(ordersData as any)
+                setOrders(ordersData as unknown as Order[])
             }
             setLoading(false)
         }
@@ -168,6 +172,7 @@ export default function OrderHistoryPage() {
                                                             <span className="text-primary font-bold">{item.quantity}x</span>
                                                             <span className="text-white/80 font-medium group-hover/item:text-primary transition-colors">
                                                                 {item.product_name || 'Producto Desconocido'}
+                                                                {item.selected_variant?.name ? ` (${item.selected_variant.name})` : ''}
                                                             </span>
                                                         </div>
                                                         <p className="text-white/30 text-xs line-clamp-1 max-w-[200px]">

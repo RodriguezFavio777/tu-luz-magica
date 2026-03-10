@@ -1,16 +1,19 @@
 'use client'
 
-import React from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Filter, X, Hexagon, Clock, Calendar, Star } from 'lucide-react'
+import { useLoadingStore } from '@/store/useLoadingStore'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function ServiceFilterSidebar({ categories }: { categories: any[] }) {
     const router = useRouter()
     const searchParams = useSearchParams()
+    const { setIsFiltering } = useLoadingStore()
 
     // Helper to update params
     const updateFilter = (key: string, value: string | null) => {
+        setIsFiltering(true); // Immediate visual feedback
         const params = new URLSearchParams(searchParams.toString())
         if (value) {
             params.set(key, value)
@@ -107,13 +110,15 @@ export function ServiceFilterSidebar({ categories }: { categories: any[] }) {
             </div>
 
             {/* Availability Box */}
-            <div className="p-6 rounded-2xl bg-[#1d1520] border border-white/5 mt-8">
+            <div className="p-6 rounded-2xl bg-surface border border-white/5 mt-8">
                 <div className="flex items-center gap-3 mb-3 text-secondary">
                     <Calendar className="w-4 h-4" />
                     <span className="text-xs font-bold uppercase tracking-wider">Próxima Disponibilidad</span>
                 </div>
                 <p className="text-white text-sm font-body">
-                    Agenda abierta para <span className="font-bold text-white underline decoration-primary decoration-2 underline-offset-2">Marzo 2024</span>.
+                    Agenda abierta para <span className="font-bold text-white underline decoration-primary decoration-2 underline-offset-2 capitalize">
+                        {new Intl.DateTimeFormat('es-AR', { month: 'long', year: 'numeric' }).format(new Date())}
+                    </span>.
                 </p>
                 <div className="mt-3 flex gap-1">
                     <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>

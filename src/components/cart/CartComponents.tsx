@@ -37,8 +37,10 @@ export const CartBadge: React.FC = () => {
  * Reusable button to add products or services to the cart.
  */
 interface AddToCartProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     product: any // We use any here for simplicity in the example, but it should be Product | ServiceCategory
     type: 'physical' | 'service'
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     bookingData?: any
     disabled?: boolean
 }

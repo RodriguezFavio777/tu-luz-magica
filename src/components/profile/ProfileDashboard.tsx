@@ -1,14 +1,17 @@
 'use client'
 
 import React, { useState } from 'react'
-import { User, Package, Settings, LogOut, MapPin, CreditCard, Save, Calendar, Clock, ChevronRight, UserCircle, Edit2, ChevronLeft, ArrowRight } from 'lucide-react'
+import { Package, Settings, LogOut, MapPin, CreditCard, Save, Calendar, Clock, UserCircle, Edit2, ChevronLeft, ArrowRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 
 interface ProfileDashboardProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     user: any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     profile: any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     orders: any[]
 }
 
@@ -19,7 +22,9 @@ export function ProfileDashboard({ user, profile, orders }: ProfileDashboardProp
     const [isLoading, setIsLoading] = useState(false)
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
     const [isEditing, setIsEditing] = useState(false)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [selectedOrder, setSelectedOrder] = useState<any>(null)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [selectedItem, setSelectedItem] = useState<any>(null)
 
     // specific form state
@@ -54,7 +59,7 @@ export function ProfileDashboard({ user, profile, orders }: ProfileDashboardProp
             // So we will respect that unless it's empty to avoid confusion? 
             // Better to just leave it disabled and let them click "Editar" to be consistent with "desactivadas... en caso de que quiera editar se activan".
         }
-    }, [formData])
+    }, [formData, isEditing, isLoading])
 
     const handleSignOut = async () => {
         await supabase.auth.signOut()
@@ -90,9 +95,10 @@ export function ProfileDashboard({ user, profile, orders }: ProfileDashboardProp
 
             // Auto-hide success message después de 3 segundos
             setTimeout(() => setMessage(null), 3000)
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('❌ Error guardando perfil:', error)
-            setMessage({ type: 'error', text: `Error: ${error.message}` })
+            const errorMessage = error instanceof Error ? error.message : String(error)
+            setMessage({ type: 'error', text: `Error: ${errorMessage}` })
         } finally {
             setIsLoading(false)
         }
@@ -152,6 +158,7 @@ export function ProfileDashboard({ user, profile, orders }: ProfileDashboardProp
                             </div>
                             {!isEditing && (
                                 <button
+                                    onClick={() => setIsEditing(true)}
                                     className="bg-primary/10 hover:bg-primary/20 text-primary px-4 py-2 rounded-lg transition-colors border border-primary/20 flex items-center gap-2 text-sm font-bold shadow-lg shadow-primary/5"
                                 >
                                     <Edit2 className="w-4 h-4" />
@@ -322,6 +329,7 @@ export function ProfileDashboard({ user, profile, orders }: ProfileDashboardProp
                                     <h4 className="font-bold text-white uppercase text-xs tracking-wider opacity-60">Productos</h4>
                                     <div className="bg-black/20 rounded-2xl overflow-hidden border border-white/5">
                                         {selectedOrder.items && selectedOrder.items.length > 0 ? (
+                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                             selectedOrder.items.map((item: any, i: number) => (
                                                 <div
                                                     key={i}
@@ -330,9 +338,9 @@ export function ProfileDashboard({ user, profile, orders }: ProfileDashboardProp
                                                 >
                                                     <div className="flex items-center gap-4">
                                                         <div className="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center shrink-0 overflow-hidden relative border border-white/10">
-                                                            {(item.product?.images?.[0] || item.product?.image_url) ? (
+                                                            {(item.product?.images?.[0] || item.product?.image_url || item.service?.image_url) ? (
                                                                 <Image
-                                                                    src={item.product.images?.[0] || item.product.image_url}
+                                                                    src={item.product?.images?.[0] || item.product?.image_url || item.service?.image_url}
                                                                     alt={item.product_name || 'Producto'}
                                                                     fill
                                                                     className="object-cover"
@@ -458,9 +466,9 @@ export function ProfileDashboard({ user, profile, orders }: ProfileDashboardProp
                             </button>
 
                             <div className="relative h-64 w-full bg-[#0a080c] shrink-0">
-                                {(selectedItem.product?.images?.[0] || selectedItem.product?.image_url) ? (
+                                {(selectedItem.product?.images?.[0] || selectedItem.product?.image_url || selectedItem.service?.image_url) ? (
                                     <Image
-                                        src={selectedItem.product.images?.[0] || selectedItem.product.image_url || ''}
+                                        src={selectedItem.product?.images?.[0] || selectedItem.product?.image_url || selectedItem.service?.image_url || ''}
                                         alt={selectedItem.product_name}
                                         fill
                                         className="object-cover"
@@ -485,7 +493,7 @@ export function ProfileDashboard({ user, profile, orders }: ProfileDashboardProp
                                         {selectedItem.product_name}
                                     </h3>
                                     <p className="text-white/60 text-xs leading-relaxed line-clamp-3">
-                                        {selectedItem.product?.description || 'Sin descripción disponible.'}
+                                        {selectedItem.product?.description || selectedItem.service?.description || 'Sin descripción disponible.'}
                                     </p>
                                 </div>
 

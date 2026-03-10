@@ -56,6 +56,7 @@ async function updateRole(userId: string) {
     // Let's create the column if it doesn't exist just in case, or just try to update.
     const { data, error } = await supabase
         .from('profiles')
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .update({ role: 'admin' } as any) // Cast to any in case types are outdated
         .eq('id', userId)
         .select()

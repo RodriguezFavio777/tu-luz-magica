@@ -4,10 +4,9 @@ import React, { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { TriquetaLogo } from '@/components/ui/TriquetaLogo'
-import { submitContactForm } from '@/app/actions/contact'
+import { submitContactForm } from '@/lib/actions/contact'
 import {
-    Clock, Heart, ShieldCheck, Star, ArrowRight, Mail, Instagram, MessageSquare, MapPin
+    Clock, Heart, ShieldCheck, Star, ArrowRight, Mail, Instagram
 } from 'lucide-react'
 
 // Images (Unsplash placeholders unless specified)
@@ -70,7 +69,6 @@ export function AboutClient() {
                         src={IMAGE_HERO}
                         alt="Background Mystical"
                         fill
-                        quality={90}
                         className="object-cover opacity-60 mix-blend-overlay"
                     />
                     <div className="absolute inset-0 bg-linear-to-b from-transparent via-[#0a080c]/50 to-[#0a080c]" />
@@ -250,8 +248,8 @@ export function AboutClient() {
                             <div className="space-y-6">
                                 <ContactLink
                                     icon={<Mail className="w-5 h-5" />}
-                                    text="hola@tuluzmagica.com"
-                                    href="mailto:hola@tuluzmagica.com"
+                                    text="cami@tuluzmagica.com"
+                                    href="mailto:cami@tuluzmagica.com"
                                 />
                                 <div className="pt-6 border-t border-white/5">
                                     <p className="text-secondary text-xs font-bold uppercase tracking-widest mb-4">Redes Sociales</p>
@@ -416,7 +414,7 @@ export function AboutClient() {
 }
 
 
-function PhilosophyCard({ icon, title, description }: any) {
+function PhilosophyCard({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) {
     return (
         <div className="bg-[#18121a] p-8 rounded-3xl border border-white/5 hover:border-white/10 transition-colors text-left group hover:shadow-[0_0_30px_rgba(244,114,182,0.1)]">
             <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 border border-white/5">
@@ -428,7 +426,7 @@ function PhilosophyCard({ icon, title, description }: any) {
     )
 }
 
-function BenefitItem({ icon, title, desc }: any) {
+function BenefitItem({ icon, title, desc }: { icon: React.ReactNode, title: string, desc: string }) {
     return (
         <div className="flex gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors hover:border-primary/20">
             <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shrink-0 shadow-lg">
@@ -442,7 +440,7 @@ function BenefitItem({ icon, title, desc }: any) {
     )
 }
 
-function ContactLink({ icon, text, href }: any) {
+function ContactLink({ icon, text, href }: { icon: React.ReactNode, text: string, href: string }) {
     return (
         <a href={href} className="flex items-center gap-4 text-white/70 hover:text-white transition-colors group">
             <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all border border-white/5">
@@ -453,10 +451,3 @@ function ContactLink({ icon, text, href }: any) {
     )
 }
 
-function SocialButton({ icon, href }: any) {
-    return (
-        <a href={href} className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all hover:scale-110">
-            {icon}
-        </a>
-    )
-}

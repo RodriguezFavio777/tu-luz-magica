@@ -68,6 +68,7 @@ export function ServiceCard({ id, title, description, price, duration, image, ic
                             src={image}
                             alt={title}
                             fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             className="object-cover group-hover:scale-110 transition-transform duration-2000"
                         />
                         {isPopular && <div className="absolute top-4 right-4 z-20 bg-primary text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">Popular</div>}
@@ -142,6 +143,7 @@ export function ServiceCard({ id, title, description, price, duration, image, ic
                 onClose={() => setIsBookingOpen(false)}
                 onConfirm={handleBookingConfirm}
                 serviceName={title}
+                serviceId={id}
             />
         </>
     )

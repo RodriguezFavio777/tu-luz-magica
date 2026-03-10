@@ -28,6 +28,7 @@ export function useCart() {
     const hasPhysicalProducts = useCartStore((state) => state.hasPhysicalProducts())
 
     // WRAPPED ACTIONS (Sync with DB)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const addItem = useCallback(async (item: any) => {
         storeAddItem(item) // Optimistic update
         if (user) {
@@ -44,7 +45,7 @@ export function useCart() {
         storeRemoveItem(itemId) // Optimistic update
         if (user && itemToRemove) {
             try {
-                await CartService.removeFromCart(user.id, itemToRemove.productId)
+                await CartService.removeFromCart(user.id, itemToRemove.productId, itemToRemove.variantName)
             } catch (error) {
                 console.error('Error syncing removing item from cart:', error)
             }
@@ -56,7 +57,7 @@ export function useCart() {
         storeUpdateQuantity(itemId, quantity) // Optimistic update
         if (user && itemToUpdate) {
             try {
-                await CartService.updateQuantity(user.id, itemToUpdate.productId, quantity)
+                await CartService.updateQuantity(user.id, itemToUpdate.productId, quantity, itemToUpdate.variantName)
             } catch (error) {
                 console.error('Error syncing update quantity:', error)
             }

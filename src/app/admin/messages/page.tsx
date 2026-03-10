@@ -1,21 +1,27 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase'
-import { Eye, Trash2, Search, Mail, Reply, CheckCircle } from 'lucide-react'
+import React, { useEffect, useState, useCallback } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import { Trash2, Search, Mail, Reply, CheckCircle } from 'lucide-react'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 
 export default function AdminMessages() {
-    const [messages, setMessages] = useState<any[]>([])
+    const [supabase] = useState(() => createClient())
+    interface ContactMessage {
+        id: string
+        name: string
+        email: string
+        subject: string
+        message: string
+        status: string | null
+        created_at: string
+    }
+    const [messages, setMessages] = useState<ContactMessage[]>([])
     const [loading, setLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState('')
 
-    useEffect(() => {
-        fetchMessages()
-    }, [])
-
-    const fetchMessages = async () => {
+    const fetchMessages = useCallback(async () => {
         try {
             setLoading(true)
             // Asumiendo que la tabla se llama 'contact_messages'
@@ -39,18 +45,23 @@ export default function AdminMessages() {
         } finally {
             setLoading(false)
         }
-    }
+    }, [supabase])
 
-    const toggleReadStatus = async (messageId: string, currentStatus: boolean) => {
+    useEffect(() => {
+        fetchMessages()
+    }, [fetchMessages])
+
+    const toggleReadStatus = async (messageId: string, currentStatus: string | null) => {
         try {
+            const newStatus = currentStatus === 'read' ? 'unread' : 'read'
             const { error } = await supabase
                 .from('contact_messages')
-                .update({ is_read: !currentStatus })
+                .update({ status: newStatus })
                 .eq('id', messageId)
 
             if (error) throw error
 
-            setMessages(messages.map(m => m.id === messageId ? { ...m, is_read: !currentStatus } : m))
+            setMessages(messages.map(m => m.id === messageId ? { ...m, status: newStatus } : m))
         } catch (error) {
             console.error('Error updating status:', error)
         }
@@ -127,9 +138,9 @@ export default function AdminMessages() {
                                 </tr>
                             ) : (
                                 filteredMessages.map((msg) => (
-                                    <tr key={msg.id} className={`transition-colors group ${msg.is_read ? 'hover:bg-white/[0.02] opacity-70' : 'bg-primary/5 hover:bg-primary/10'}`}>
+                                    <tr key={msg.id} className={`transition-colors group ${msg.status === 'read' ? 'hover:bg-white/2 opacity-70' : 'bg-primary/5 hover:bg-primary/10'}`}>
                                         <td className="p-6">
-                                            <p className={`font-bold text-sm mb-1 ${msg.is_read ? 'text-white' : 'text-primary'}`}>
+                                            <p className={`font-bold text-sm mb-1 ${msg.status === 'read' ? 'text-white' : 'text-primary'}`}>
                                                 {msg.name}
                                             </p>
                                             <p className="text-white/50 text-xs">
@@ -138,7 +149,7 @@ export default function AdminMessages() {
                                         </td>
 
                                         <td className="p-6">
-                                            <p className={`font-medium text-sm truncate max-w-[200px] ${msg.is_read ? 'text-white/80' : 'text-white'}`}>
+                                            <p className={`font-medium text-sm truncate max-w-[200px] ${msg.status === 'read' ? 'text-white/80' : 'text-white'}`}>
                                                 {msg.subject || 'Sin Asunto'}
                                             </p>
                                         </td>
@@ -157,9 +168,9 @@ export default function AdminMessages() {
 
                                         <td className="p-6 text-right space-x-2 whitespace-nowrap">
                                             <button
-                                                onClick={() => toggleReadStatus(msg.id, msg.is_read)}
-                                                className={`p-2 rounded-lg transition-colors inline-flex ${msg.is_read ? 'bg-white/5 text-white/50 hover:bg-white/10 hover:text-white' : 'bg-primary/20 text-primary hover:bg-primary/30'}`}
-                                                title={msg.is_read ? "Marcar como no leído" : "Marcar como leído"}
+                                                onClick={() => toggleReadStatus(msg.id, msg.status)}
+                                                className={`p-2 rounded-lg transition-colors inline-flex ${msg.status === 'read' ? 'bg-white/5 text-white/50 hover:bg-white/10 hover:text-white' : 'bg-primary/20 text-primary hover:bg-primary/30'}`}
+                                                title={msg.status === 'read' ? "Marcar como no leído" : "Marcar como leído"}
                                             >
                                                 <CheckCircle className="w-4 h-4" />
                                             </button>

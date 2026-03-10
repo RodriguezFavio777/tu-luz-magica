@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Plus, ShoppingBag } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { AddToCartButton } from '@/components/cart/CartComponents'
 import { ProductQuickView } from './ProductQuickView'
 import { Product } from '@/lib/supabase/database.types'
@@ -58,17 +58,14 @@ export function ProductCard({ product }: ProductCardProps) {
 
                         {/* Badge */}
                         <div className="absolute top-4 right-4 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest text-white/70 border border-white/5">
-                            {product.type === 'physical' ? 'Objeto' : 'Servicio'}
+                            Objeto
                         </div>
                     </div>
 
                     <div className="p-6 flex flex-col grow">
-                        <h3 className="text-lg font-bold text-white mb-2 font-display min-h-12 line-clamp-2 group-hover:text-primary transition-colors">
+                        <h3 className="text-lg font-bold text-white mb-6 font-display min-h-12 line-clamp-2 group-hover:text-primary transition-colors">
                             {product.name}
                         </h3>
-                        <p className="text-white/50 text-xs mb-6 font-body leading-relaxed line-clamp-2 grow">
-                            {product.description}
-                        </p>
 
                         <div className="space-y-4 mt-auto">
                             <div className="flex flex-col">

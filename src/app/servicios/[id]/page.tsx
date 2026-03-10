@@ -1,22 +1,43 @@
-import { createClient } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, Clock, ShoppingBag, Check, Video, MapPin } from 'lucide-react';
+import { ArrowLeft, Video } from 'lucide-react';
 import ServiceInfoClient from '@/components/services/ServiceInfoClient';
+import { Metadata } from 'next';
+
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+    const { id } = await params;
+    const supabase = await createClient();
+    const { data: service } = await supabase
+        .from('services')
+        .select('name, description, image_url')
+        .eq('id', id)
+        .single();
+
+    if (!service) return { title: 'Servicio no encontrado | Tu Luz Mágica' };
+
+    return {
+        title: `${service.name} | Tu Luz Mágica`,
+        description: service.description || `Agenda tu sesión de ${service.name} en Tu Luz Mágica.`,
+        openGraph: {
+            title: service.name,
+            description: service.description,
+            images: [service.image_url || '/tarot_mystical_bg.png'],
+        },
+    };
+}
 
 // Server Component (assuming Next.js App Router)
 export default async function ServicePage({ params }: { params: { id: string } }) {
     const { id } = await params;
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // Fetch Service Data
     const { data: service, error } = await supabase
-        .from('products')
+        .from('services')
         .select('*, category:service_categories(name)')
         .eq('id', id)
-        // .eq('is_active', true) // Removed strict active check just in case, or keep it if desired. User said stock 0 issue?
-        // Let's keep is_active=true but ensure we don't check stock. A service usually doesn't have stock or it's null.
         .eq('is_active', true)
         .single();
 
@@ -75,7 +96,24 @@ export default async function ServicePage({ params }: { params: { id: string } }
 
                     </div>
                 </div>
+
+                {/* Recommended Services Section */}
+                <ServiceRecomendations currentId={service.id} />
             </div>
         </main>
     );
+}
+
+// Side component to fetch and render recommendations within the same server action flow
+async function ServiceRecomendations({ currentId }: { currentId: string }) {
+    const supabase = await createClient();
+    const { data: recommendedServices } = await supabase
+        .from('services')
+        .select('*')
+        .eq('is_active', true)
+        .neq('id', currentId)
+        .limit(10);
+
+    const { RecommendedItems } = await import('@/components/ui/RecommendedItems');
+    return <RecommendedItems type="service" items={recommendedServices || []} />;
 }

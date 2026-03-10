@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Fraunces, Manrope } from "next/font/google";
+import React from "react";
 import "./globals.css";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
+import { LayoutWrapper } from "@/components/layout/LayoutWrapper";
 import ScrollToTop from "@/components/layout/ScrollToTop";
 
 const fraunces = Fraunces({
@@ -17,9 +17,44 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "Tu Luz Mágica | Ilumina tu Esencia Sagrada",
+  metadataBase: new URL('https://tuluzmagica.com'),
+  title: {
+    template: '%s | Tu Luz Mágica',
+    default: 'Tu Luz Mágica | Lecturas de Tarot y Sanación Energética',
+  },
   description: "Lecturas de tarot, rituales energéticos y herramientas místicas diseñadas para acompañarte en tu evolución espiritual.",
+  keywords: ['tarot', 'sanación', 'espiritualidad', 'argentina', 'lecturas de tarot online', 'rituales magicos'],
+  authors: [{ name: 'Camí' }],
+  creator: 'Camí',
+  publisher: 'Tu Luz Mágica',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  icons: {
+    icon: '/icon.png',
+    shortcut: '/icon.png',
+    apple: '/apple-icon.png',
+  },
+  openGraph: {
+    title: 'Tu Luz Mágica | Ilumina tu Esencia Sagrada',
+    description: 'Lecturas de tarot, rituales energéticos y herramientas místicas para tu evolución espiritual.',
+    url: 'https://tuluzmagica.com.ar',
+    siteName: 'Tu Luz Mágica',
+    locale: 'es_AR',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Tu Luz Mágica | Ilumina tu Esencia Sagrada',
+    description: 'Lecturas de tarot, rituales energéticos y herramientas místicas para tu evolución espiritual.',
+  },
 };
+
+import { AuthProvider } from "@/context/AuthContext";
+import { ToastProvider } from "@/context/ToastContext";
+import { GlobalLoader } from "@/components/ui/GlobalLoader";
 
 export default function RootLayout({
   children,
@@ -31,11 +66,17 @@ export default function RootLayout({
       <body
         className={`${fraunces.variable} ${manrope.variable} font-body antialiased selection:bg-pink-400 selection:text-white`}
       >
-        <ScrollToTop />
-        <Navbar />
-        {children}
-        <Footer />
+        <AuthProvider>
+          <ToastProvider>
+            <GlobalLoader />
+            <ScrollToTop />
+            <LayoutWrapper>
+              {children}
+            </LayoutWrapper>
+          </ToastProvider>
+        </AuthProvider>
       </body>
     </html>
   );
 }
+

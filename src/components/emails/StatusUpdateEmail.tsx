@@ -48,13 +48,22 @@ export function StatusUpdateEmail({
                             Te escribimos para informarte que el estado de tu {isBooking ? 'turno' : 'pedido'} #{orderId.slice(-6)} ha cambiado a:
                         </Text>
 
-                        <Section className="bg-[#2c1f30] p-4 rounded-md mb-[20px] text-center border border-[#f472b6]/20">
-                            <Text className="text-[#f472b6] font-bold text-[20px] uppercase tracking-wider m-0">
+                        <Section className="bg-[#2c1f30] p-6 rounded-2xl mb-[20px] text-center border border-[#f472b6]/30">
+                            <Text className="text-[#a0aec0] text-[13px] uppercase tracking-[2px] mb-2 font-medium">
+                                Nuevo Estado
+                            </Text>
+                            <Text className="text-[#f472b6] font-bold text-[24px] uppercase tracking-wider m-0">
                                 {newStatus}
                             </Text>
                         </Section>
 
-                        {newStatus.toLowerCase() === 'enviado' && (
+                        {newStatus.toLowerCase().includes('pagado') && (
+                            <Text className="text-[#a8eb12] text-[15px] leading-[22px] mt-4 text-center font-medium bg-[#a8eb12]/10 p-3 rounded-lg border border-[#a8eb12]/20">
+                                ¡Confirmamos tu pago exitosamente!
+                            </Text>
+                        )}
+
+                        {newStatus.toLowerCase().includes('enviado') && (
                             <Text className="text-[#a8eb12] text-[15px] leading-[22px] italic mt-4 text-center">
                                 ¡Tu pedido ya está en camino!
                             </Text>

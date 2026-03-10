@@ -2,7 +2,6 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  reactCompiler: true,
   images: {
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
@@ -11,6 +10,11 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'lh3.googleusercontent.com',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'img.youtube.com',
         pathname: '**',
       },
       {
@@ -38,8 +42,30 @@ const nextConfig: NextConfig = {
         hostname: 'santerialacatedral.com.ar',
         pathname: '**',
       },
+      {
+        protocol: 'https',
+        hostname: 'placehold.co',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.supabase.co',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.google.com',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'upload.wikimedia.org',
+        pathname: '**',
+      }
     ],
+    qualities: [25, 50, 75, 100],
   },
 };
+
 
 export default nextConfig;

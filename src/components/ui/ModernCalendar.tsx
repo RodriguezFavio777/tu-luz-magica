@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface ModernCalendarProps {
@@ -124,12 +124,12 @@ export function ModernCalendar({ selectedDate, onDateSelect, minDate = new Date(
                                 }
                             }}
                             className={`w-10 h-10 mx-auto flex items-center justify-center rounded-full text-sm font-medium transition-all ${isSelected
-                                    ? 'bg-primary text-white font-bold shadow-[0_0_15px_rgba(244,114,182,0.5)]'
-                                    : isDisabled
-                                        ? 'text-white/10 cursor-not-allowed'
-                                        : d.isCurrentMonth
-                                            ? 'text-white/90 hover:bg-white/10'
-                                            : 'text-white/30 hover:bg-white/5'
+                                ? 'bg-primary text-white font-bold shadow-[0_0_15px_rgba(244,114,182,0.5)]'
+                                : isDisabled
+                                    ? 'text-white/10 cursor-not-allowed'
+                                    : d.isCurrentMonth
+                                        ? 'text-white/90 hover:bg-white/10'
+                                        : 'text-white/30 hover:bg-white/5'
                                 }`}
                         >
                             {d.day}

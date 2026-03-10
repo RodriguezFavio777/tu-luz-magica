@@ -4,6 +4,7 @@ export function VariantSelector({
     selected,
     onSelect
 }: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     variants: any[],
     selected?: string | null,
     onSelect?: (val: string) => void

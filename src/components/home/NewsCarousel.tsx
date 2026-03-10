@@ -2,9 +2,8 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ShoppingBag, ArrowRight, Star, Pause, Play, Plus } from 'lucide-react'
+import { ShoppingBag, Star, Pause, Play, Plus } from 'lucide-react'
 import { AddToCartButton } from '@/components/cart/CartComponents'
 import { createClient } from '@/lib/supabase/client'
 import { Product } from '@/lib/supabase/database.types'
@@ -23,7 +22,7 @@ export function NewsCarousel() {
             const { data } = await supabase
                 .from('products')
                 .select('*')
-                .eq('type', 'physical')
+
                 .eq('is_active', true)
                 .order('created_at', { ascending: false })
                 .limit(4)

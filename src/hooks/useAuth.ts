@@ -1,32 +1,21 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useGlobalAuth } from '@/context/AuthContext'
 import { createClient } from '@/lib/supabase/client'
-import { User, Session } from '@supabase/supabase-js'
 
 export function useAuth() {
-    const [user, setUser] = useState<User | null>(null)
-    const [session, setSession] = useState<Session | null>(null)
-    const [loading, setLoading] = useState(true)
+    const { user, session, role, loading, signOut: contextSignOut } = useGlobalAuth()
     const supabase = createClient()
 
-    useEffect(() => {
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
-            (_event, session) => {
-                setSession(session)
-                setUser(session?.user ?? null)
-                setLoading(false)
-            }
-        )
+    const signInWithGoogle = async (next?: string) => {
+        const redirectTo = next
+            ? `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`
+            : `${window.location.origin}/auth/callback?next=${encodeURIComponent(window.location.pathname)}`
 
-        return () => subscription.unsubscribe()
-    }, [])
-
-    const signInWithGoogle = async () => {
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: `${window.location.origin}/auth/callback`,
+                redirectTo,
             },
         })
         if (error) console.error('Google Auth Error:', error)
@@ -51,17 +40,14 @@ export function useAuth() {
         if (error) throw error
     }
 
-    const signOut = async () => {
-        await supabase.auth.signOut()
-    }
-
     return {
         user,
         session,
+        role,
         loading,
         signInWithGoogle,
         signInWithPassword,
         signUpWithPassword,
-        signOut
+        signOut: contextSignOut
     }
 }
