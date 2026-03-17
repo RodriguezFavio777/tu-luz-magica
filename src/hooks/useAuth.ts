@@ -8,9 +8,10 @@ export function useAuth() {
     const supabase = createClient()
 
     const signInWithGoogle = async (next?: string) => {
+        const origin = typeof window !== 'undefined' ? window.location.origin : ''
         const redirectTo = next
-            ? `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`
-            : `${window.location.origin}/auth/callback?next=${encodeURIComponent(window.location.pathname)}`
+            ? `${origin}/auth/callback?next=${encodeURIComponent(next)}`
+            : `${origin}/auth/callback?next=${encodeURIComponent(window.location.pathname)}`
 
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
