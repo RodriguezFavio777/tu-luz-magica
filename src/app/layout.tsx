@@ -56,6 +56,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { ToastProvider } from "@/context/ToastContext";
 import { GlobalLoader } from "@/components/ui/GlobalLoader";
 import { NavigationLoader } from "@/components/ui/NavigationLoader";
+import { Suspense } from "react";
 
 export default function RootLayout({
   children,
@@ -70,7 +71,9 @@ export default function RootLayout({
         <AuthProvider>
           <ToastProvider>
             <GlobalLoader />
-            <NavigationLoader />
+            <Suspense fallback={null}>
+              <NavigationLoader />
+            </Suspense>
             <ScrollToTop />
             <LayoutWrapper>
               {children}

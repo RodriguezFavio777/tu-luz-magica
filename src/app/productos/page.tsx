@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import Image from 'next/image'
 import { Package } from 'lucide-react'
 import { ProductService } from '@/services/ProductService'
@@ -89,21 +89,23 @@ export default async function ProductsPage({
                     <ProductFilterSidebar categories={categories || []} />
 
                     <div className="flex-1 min-h-[400px]">
-                        <DataGridSwitcher>
-                            {!products || products.length === 0 ? (
-                                <div className="text-center py-20 border border-white/5 rounded-3xl bg-surface/50">
-                                    <p className="text-white/40">No se encontraron productos con estos filtros.</p>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {products.map((product) => (
-                                        <ProductCard key={product.id} product={product} />
-                                    ))}
-                                </div>
-                            )}
+                        <Suspense fallback={<div className="min-h-[400px] animate-pulse bg-white/5 rounded-3xl" />}>
+                            <DataGridSwitcher>
+                                {!products || products.length === 0 ? (
+                                    <div className="text-center py-20 border border-white/5 rounded-3xl bg-surface/50">
+                                        <p className="text-white/40">No se encontraron productos con estos filtros.</p>
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {products.map((product) => (
+                                            <ProductCard key={product.id} product={product} />
+                                        ))}
+                                    </div>
+                                )}
 
-                            <PaginationControls currentPage={currentPage} totalPages={totalPages} />
-                        </DataGridSwitcher>
+                                <PaginationControls currentPage={currentPage} totalPages={totalPages} />
+                            </DataGridSwitcher>
+                        </Suspense>
                     </div>
                 </div>
             </div>

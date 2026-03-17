@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import Image from 'next/image'
 import { Sparkles, Hexagon } from 'lucide-react'
 import { ServiceService } from '@/services/ServiceService'
@@ -68,30 +68,32 @@ export default async function ServicesPage({
                     <ServiceFilterSidebar categories={categories || []} />
 
                     <div className="flex-1 min-h-[400px]">
-                        <DataGridSwitcher>
-                            <div className="grid md:grid-cols-2 gap-8 h-fit">
-                                {services?.map((service) => (
-                                    <ServiceCard
-                                        key={service.id}
-                                        id={service.id}
-                                        title={service.name}
-                                        description={service.description || ""}
-                                        price={service.price}
-                                        duration={"Consultar"}
-                                        image={service.image_url || "/placeholder-service.jpg"}
-                                        icon={<Hexagon className="w-6 h-6" />}
-                                        variants={service.variants}
-                                        isPopular={false}
-                                    />
-                                ))}
+                        <Suspense fallback={<div className="min-h-[400px] animate-pulse bg-white/5 rounded-3xl" />}>
+                            <DataGridSwitcher>
+                                <div className="grid md:grid-cols-2 gap-8 h-fit">
+                                    {services?.map((service) => (
+                                        <ServiceCard
+                                            key={service.id}
+                                            id={service.id}
+                                            title={service.name}
+                                            description={service.description || ""}
+                                            price={service.price}
+                                            duration={"Consultar"}
+                                            image={service.image_url || "/placeholder-service.jpg"}
+                                            icon={<Hexagon className="w-6 h-6" />}
+                                            variants={service.variants}
+                                            isPopular={false}
+                                        />
+                                    ))}
 
-                                {(!services || services.length === 0) && (
-                                    <div className="col-span-full py-20 text-center border dashed border-white/10 rounded-3xl">
-                                        <p className="text-white/40">No hay servicios disponibles con estos filtros.</p>
-                                    </div>
-                                )}
-                            </div>
-                        </DataGridSwitcher>
+                                    {(!services || services.length === 0) && (
+                                        <div className="col-span-full py-20 text-center border dashed border-white/10 rounded-3xl">
+                                            <p className="text-white/40">No hay servicios disponibles con estos filtros.</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </DataGridSwitcher>
+                        </Suspense>
                     </div>
                 </div>
             </div>
