@@ -61,8 +61,8 @@ export default function ServiceInfoClient({ service }: ServiceInfoClientProps) {
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 relative">
 
-            {/* Sticky Header: Price & Duration */}
-            <div className="sticky top-[74px] z-30 bg-background/95 backdrop-blur-xl py-4 border-b border-white/5 rounded-b-2xl -mx-4 px-4 shadow-2xl transition-all duration-300">
+            {/* Price & Duration Section */}
+            <div className="md:sticky top-[74px] z-30 bg-background/95 backdrop-blur-xl py-4 border-b border-white/5 rounded-b-2xl -mx-4 px-4 shadow-2xl transition-all duration-300">
                 <div className="grid grid-cols-2 gap-4">
                     <div className="bg-surface p-4 rounded-xl border border-white/5 shadow-inner relative overflow-hidden group">
                         <div className="absolute inset-0 bg-linear-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />

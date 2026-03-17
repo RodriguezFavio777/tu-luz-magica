@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Tu Luz Mágica | Ilumina tu Esencia Sagrada',
     description: 'Lecturas de tarot, rituales energéticos y herramientas místicas para tu evolución espiritual.',
-    url: 'https://tuluzmagica.com.ar',
+    url: 'https://tuluzmagica.com',
     siteName: 'Tu Luz Mágica',
     locale: 'es_AR',
     type: 'website',

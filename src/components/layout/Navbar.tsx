@@ -186,14 +186,14 @@ export function Navbar() {
         <>
             <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />
 
-            <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'bg-background/80 backdrop-blur-xl border-b border-white/5 py-4' : 'bg-transparent py-6'
+            <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'bg-background/80 backdrop-blur-xl border-b border-white/5 py-3 md:py-4' : 'bg-transparent py-4 md:py-6'
                 }`}>
                 <div className="max-w-[1280px] mx-auto px-6 flex items-center justify-between">
                     {/* Logo */}
                     <div className="flex items-center gap-6">
                         <Link href="/" className="flex items-center gap-3 group">
                             <TriquetaLogo size={42} className="group-hover:rotate-12 transition-transform duration-500" />
-                            <h1 className="text-2xl font-bold tracking-tight font-display bg-linear-to-r from-white to-white/70 bg-clip-text text-transparent">
+                            <h1 className="text-2xl font-bold tracking-tight font-display bg-linear-to-r from-white to-white/70 bg-clip-text text-transparent hidden md:block">
                                 Tu Luz Mágica
                             </h1>
                         </Link>

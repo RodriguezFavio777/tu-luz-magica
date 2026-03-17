@@ -51,7 +51,7 @@ export default async function ServicePage({ params }: { params: { id: string } }
     const displayImage = service.image_url || 'https://placehold.co/600x800/1a1a1a/f472b6?text=Servicio+Mistico';
 
     return (
-        <main className="min-h-screen bg-background pt-32 pb-20">
+        <main className="min-h-screen bg-background pt-40 md:pt-32 pb-20">
             <div className="container mx-auto px-6 max-w-5xl">
                 <Link href="/servicios" className="inline-flex items-center gap-2 text-white/50 hover:text-white mb-8 transition-colors">
                     <ArrowLeft className="w-4 h-4" />
@@ -60,7 +60,7 @@ export default async function ServicePage({ params }: { params: { id: string } }
 
                 <div className="grid md:grid-cols-2 gap-12 lg:gap-20 items-start">
                     {/* Image Section */}
-                    <div className="space-y-4 sticky top-32">
+                    <div className="space-y-4 md:sticky top-32">
                         <div className="aspect-4/5 relative rounded-3xl overflow-hidden border border-white/10 bg-surface shadow-2xl shadow-primary/5">
                             <Image
                                 src={displayImage}

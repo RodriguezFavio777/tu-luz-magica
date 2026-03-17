@@ -39,7 +39,7 @@ export default function CartPage() {
                                 <CartItemCard key={item.id} item={item} />
                             ))}
                         </div>
-                        <div className="lg:col-span-1 sticky top-32">
+                        <div className="lg:col-span-1 lg:sticky top-32">
                             <CartSummary />
                         </div>
                     </div>
