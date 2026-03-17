@@ -80,6 +80,7 @@ export default async function ServicesPage({
                                         duration={"Consultar"}
                                         image={service.image_url || "/placeholder-service.jpg"}
                                         icon={<Hexagon className="w-6 h-6" />}
+                                        variants={service.variants}
                                         isPopular={false}
                                     />
                                 ))}

@@ -6,38 +6,40 @@ import { BookingModal } from '@/components/services/BookingModal';
 import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
-import { ServiceDetail } from '@/data/serviceVariants';
+import { SERVICE_POLICIES } from '@/constants/servicePolicies';
 
 interface ServiceInfoClientProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     service: any;
-    details: ServiceDetail | undefined;
 }
 
-export default function ServiceInfoClient({ service, details }: ServiceInfoClientProps) {
+export default function ServiceInfoClient({ service }: ServiceInfoClientProps) {
     const [isBookingOpen, setIsBookingOpen] = useState(false);
     const { items, addItem } = useCart();
     const { user, loading } = useAuth();
     const router = useRouter();
 
-    // Initialize variants and features from DB with static fallback
-    const variants = (service.variants && service.variants.length > 0) ? service.variants : (details?.variants || []);
-    const features = (service.includes && service.includes.length > 0) ? service.includes : (details?.features || []);
+    // Initialize variants and features from DB exclusively
+    const variants = (service.variants && service.variants.length > 0) ? service.variants : [];
+    const features = (service.includes && service.includes.length > 0) ? service.includes : [];
 
     const [selectedVariant, setSelectedVariant] = useState(variants.length > 0 ? variants[0] : null);
 
     const currentPrice = selectedVariant ? selectedVariant.price : service.price;
-
-    // Improved duration display: Priority DB -> Variant -> Static
-    const currentDuration = selectedVariant
-        ? `${selectedVariant.duration} ${selectedVariant.duration_unit || 'minutos'}`
-        : (service.duration_minutes ? `${service.duration_minutes} ${service.duration_unit || 'minutos'}` : (details?.preparationTime || 'Consultar'));
 
     // Determine if time selection is needed based on category (Rituals = Date only, Readings = Date & Time)
     const categoryName = service.category?.name?.toLowerCase() || '';
     const nameLower = service.name?.toLowerCase() || '';
     const isRitual = categoryName.includes('ritual') || categoryName.includes('limpieza') || nameLower.includes('ritual') || nameLower.includes('velación') || nameLower.includes('endulzamiento');
     const enableTimeSelection = !isRitual;
+
+    // Get policies from common constants
+    const policies = isRitual ? SERVICE_POLICIES.RITUAL : SERVICE_POLICIES.READING;
+
+    // Improved duration display: Priority DB -> Variant -> Shared Policy
+    const currentDuration = selectedVariant
+        ? `${selectedVariant.duration} ${selectedVariant.duration_unit || 'minutos'}`
+        : (service.duration_minutes ? `${service.duration_minutes} ${service.duration_unit || 'minutos'}` : policies.preparationTime);
 
     const handleBookingConfirm = (date: string, time: string) => {
         const variantName = selectedVariant ? selectedVariant.name : undefined;
@@ -144,24 +146,22 @@ export default function ServiceInfoClient({ service, details }: ServiceInfoClien
                     </div>
                 )}
 
-                {/* Conditions Section */}
-                {details?.conditions && (
-                    <div className="bg-red-500/5 border border-red-500/10 rounded-2xl p-6">
-                        <h3 className="text-sm font-bold text-red-300 uppercase tracking-wider mb-3 flex items-center gap-2">
-                            <ShieldCheck className="w-4 h-4" />
-                            Condiciones Importantes
-                        </h3>
-                        <p className="text-white/60 text-sm leading-relaxed italic">
-                            &quot;{details.conditions}&quot;
-                        </p>
-                        {details.modality?.includes('Online') && (
-                            <div className="mt-4 flex items-center gap-2 text-xs text-white/40 bg-white/5 p-3 rounded-lg">
-                                <Calendar className="w-4 h-4" />
-                                <span>Servicio vinculado a Google Calendar. Recibirás invitación.</span>
-                            </div>
-                        )}
-                    </div>
-                )}
+                {/* Conditions Section (Common Policies) */}
+                <div className="bg-red-500/5 border border-red-500/10 rounded-2xl p-6">
+                    <h3 className="text-sm font-bold text-red-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <ShieldCheck className="w-4 h-4" />
+                        Bases y Condiciones del Servicio
+                    </h3>
+                    <p className="text-white/60 text-sm leading-relaxed italic">
+                        &quot;{policies.conditions}&quot;
+                    </p>
+                    {policies.modality.includes('Online') && (
+                        <div className="mt-4 flex items-center gap-2 text-xs text-white/40 bg-white/5 p-3 rounded-lg">
+                            <Calendar className="w-4 h-4" />
+                            <span>Servicio vinculado a Google Calendar. Recibirás invitación.</span>
+                        </div>
+                    )}
+                </div>
 
                 {/* Final Booking Button (Static) */}
                 <div className="pt-8 pb-4">

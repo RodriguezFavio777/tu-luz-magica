@@ -1,13 +1,11 @@
 'use client'
 
-import React, { useState } from 'react'
+import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ShoppingBag, Plus } from 'lucide-react'
 import { useCart } from '@/hooks/useCart'
-import { BookingModal } from './BookingModal'
-import { SERVICE_VARIANTS } from '@/data/serviceVariants'
 
 interface ServiceCardProps {
     id: string
@@ -18,37 +16,15 @@ interface ServiceCardProps {
     image: string
     icon: React.ReactNode
     isPopular?: boolean
+    variants?: any[] | null
 }
 
-export function ServiceCard({ id, title, description, price, duration, image, icon, isPopular = false }: ServiceCardProps) {
-    const [isBookingOpen, setIsBookingOpen] = useState(false)
-    const { addItem, items } = useCart()
-    const [isAdded, setIsAdded] = useState(false)
+export function ServiceCard({ id, title, description, price, duration, image, icon, isPopular = false, variants = [] }: ServiceCardProps) {
+    const { items } = useCart()
+    const isInCart = items.some(i => i.productId === id)
 
-    // Check if item is already in cart
-    const existingItem = items.find(i => i.productId === id)
-    const isInCart = !!existingItem
-
-    const handleBookingConfirm = (date: string, time: string) => {
-        addItem({
-            id: `service-${id}`,
-            productId: id,
-            name: title,
-            type: 'service',
-            price: price,
-            quantity: 1,
-            imageUrl: image,
-            bookingData: { startTime: `${date} ${time}` }
-        })
-
-        setIsAdded(true)
-        setTimeout(() => setIsAdded(false), 2000)
-    }
-
-    const hasVariants = !!SERVICE_VARIANTS[title];
-    const variants = SERVICE_VARIANTS[title];
-    const displayPrice = hasVariants && variants.length > 0
-        ? Math.min(...variants.map(v => v.price))
+    const displayPrice = (variants && variants.length > 0)
+        ? variants[0].price
         : price;
 
     return (
@@ -89,17 +65,20 @@ export function ServiceCard({ id, title, description, price, duration, image, ic
                         <div className="mt-auto flex flex-col gap-4">
                             <div className="flex items-center justify-between">
                                 <span className="text-xl font-bold text-white font-display">
-                                    {hasVariants ? `Desde $${displayPrice.toLocaleString('es-AR')}` : `$${displayPrice.toLocaleString('es-AR')}`}
+                                    ${displayPrice.toLocaleString('es-AR')}
                                 </span>
                                 <span className="text-xs text-secondary font-bold font-body uppercase tracking-wider">{duration}</span>
                             </div>
 
-                            {isInCart && !hasVariants ? (
-                                <button disabled className="w-full bg-green-500/20 text-green-400 font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 cursor-default border border-green-500/50">
+                            {isInCart ? (
+                                <Link
+                                    href="/checkout"
+                                    className="w-full bg-green-500/20 text-green-400 font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 border border-green-500/50 hover:bg-green-500/30 transition-all"
+                                >
                                     <ShoppingBag className="w-5 h-5" />
                                     En tu Carrito
-                                </button>
-                            ) : hasVariants ? (
+                                </Link>
+                            ) : (
                                 <Link
                                     href={`/servicios/${id}`}
                                     className="w-full bg-primary hover:bg-[#fa9acb] text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 shadow-primary/20"
@@ -107,44 +86,11 @@ export function ServiceCard({ id, title, description, price, duration, image, ic
                                     <Plus className="w-5 h-5" />
                                     Ver Opciones
                                 </Link>
-                            ) : (
-                                <button
-                                    onClick={(e) => {
-                                        e.preventDefault()
-                                        e.stopPropagation()
-                                        setIsBookingOpen(true)
-                                    }}
-                                    disabled={isAdded}
-                                    className={`w-full font-bold py-3 px-6 rounded-xl transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 ${isAdded
-                                        ? 'bg-green-500 text-white shadow-green-500/20'
-                                        : 'bg-primary hover:bg-[#fa9acb] text-white shadow-primary/20'
-                                        }`}
-                                >
-                                    {isAdded ? (
-                                        <>
-                                            <ShoppingBag className="w-5 h-5" />
-                                            ¡Agregado!
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Plus className="w-5 h-5" />
-                                            Reservar Ahora
-                                        </>
-                                    )}
-                                </button>
                             )}
                         </div>
                     </div>
                 </div>
             </motion.div>
-
-            <BookingModal
-                isOpen={isBookingOpen}
-                onClose={() => setIsBookingOpen(false)}
-                onConfirm={handleBookingConfirm}
-                serviceName={title}
-                serviceId={id}
-            />
         </>
     )
 }

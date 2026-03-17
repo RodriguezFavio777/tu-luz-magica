@@ -55,6 +55,7 @@ export const metadata: Metadata = {
 import { AuthProvider } from "@/context/AuthContext";
 import { ToastProvider } from "@/context/ToastContext";
 import { GlobalLoader } from "@/components/ui/GlobalLoader";
+import { NavigationLoader } from "@/components/ui/NavigationLoader";
 
 export default function RootLayout({
   children,
@@ -69,6 +70,7 @@ export default function RootLayout({
         <AuthProvider>
           <ToastProvider>
             <GlobalLoader />
+            <NavigationLoader />
             <ScrollToTop />
             <LayoutWrapper>
               {children}

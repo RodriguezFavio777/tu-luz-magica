@@ -10,8 +10,8 @@ export async function POST(req: Request) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                "api-key": process.env.NEXT_PUBLIC_ENVIOPACK_API_KEY,
-                "secret-key": process.env.NEXT_PUBLIC_ENVIOPACK_SECRET_KEY
+                "api-key": process.env.ENVIOPACK_API_KEY,
+                "secret-key": process.env.ENVIOPACK_SECRET_KEY
             })
         })
 

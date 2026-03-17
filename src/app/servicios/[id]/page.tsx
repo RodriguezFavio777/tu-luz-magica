@@ -45,9 +45,7 @@ export default async function ServicePage({ params }: { params: { id: string } }
         notFound();
     }
 
-    // Import details
-    const { SERVICE_DETAILS } = await import('@/data/serviceVariants');
-    const details = SERVICE_DETAILS[service.name];
+
 
     // Default image if missing
     const displayImage = service.image_url || 'https://placehold.co/600x800/1a1a1a/f472b6?text=Servicio+Mistico';
@@ -88,11 +86,11 @@ export default async function ServicePage({ params }: { params: { id: string } }
                         </h1>
 
                         <div className="prose prose-invert text-white/70 text-base leading-relaxed mb-8 font-body">
-                            {details?.shortDescription || service.description}
+                            {service.description}
                         </div>
 
                         {/* Interactive Client Component (Handles Price, Duration, Variants, Include List, Button) */}
-                        <ServiceInfoClient service={service} details={details} />
+                        <ServiceInfoClient service={service} />
 
                     </div>
                 </div>
