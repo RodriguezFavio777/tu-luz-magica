@@ -39,8 +39,8 @@ export function HeroSection() {
 
                     <h2 className="text-5xl md:text-7xl lg:text-8xl font-black leading-[0.95] tracking-tighter text-white mb-8 font-sans drop-shadow-[0_4px_10px_rgba(0,0,0,0.5)]">
                         Ilumina tu <br />
-                        <span className="font-display bg-linear-to-r from-secondary via-primary to-secondary bg-clip-text text-transparent italic pr-3 drop-shadow-[0_0_25px_rgba(244,114,182,0.5)]">Esencia</span>
-                        <span className="font-display bg-linear-to-r from-accent via-[#fcd34d] to-accent bg-clip-text text-transparent pl-3 drop-shadow-[0_0_25px_rgba(255,215,0,0.5)]">Sagrada</span>
+                        <span className="font-display bg-linear-to-r from-primary via-[#d63384] to-[#fa9acb] bg-clip-text text-transparent italic pr-3 drop-shadow-[0_0_25px_rgba(244,114,182,0.6)]">Esencia</span>
+                        <span className="font-display bg-linear-to-r from-accent via-[#fcd34d] to-accent bg-clip-text text-transparent pl-3 drop-shadow-[0_0_25px_rgba(255,215,0,0.6)]">Sagrada</span>
                     </h2>
 
 

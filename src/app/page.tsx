@@ -1,15 +1,20 @@
 import Link from 'next/link'
 import { Hexagon, ArrowRight } from 'lucide-react'
-import { NewsCarousel } from '@/components/home/NewsCarousel'
-import { SusurrosGallery } from '@/components/home/SusurrosGallery'
+import { Metadata } from 'next'
 import { ServiceCard } from '@/components/services/ServiceCard'
 import { ServiceService } from '@/services/ServiceService'
-import { Metadata } from 'next'
-
-// New modular components
+import dynamic from 'next/dynamic'
 import { HeroSection } from '@/components/home/HeroSection'
 import { AboutMeSection } from '@/components/home/AboutMeSection'
-import { HomeCTA } from '@/components/home/HomeCTA'
+
+// Dynamic imports for below-the-fold components
+const NewsCarousel = dynamic(() => import('@/components/home/NewsCarousel').then(m => m.NewsCarousel), {
+  loading: () => <div className="h-96 w-full animate-pulse bg-surface-accent/20" />
+})
+const SusurrosGallery = dynamic(() => import('@/components/home/SusurrosGallery').then(m => m.SusurrosGallery), {
+  loading: () => <div className="h-96 w-full animate-pulse bg-background/20" />
+})
+const HomeCTA = dynamic(() => import('@/components/home/HomeCTA').then(m => m.HomeCTA))
 
 export const metadata: Metadata = {
   title: 'Tu Luz Mágica | Lecturas de Tarot y Sanación Energética',
@@ -43,8 +48,8 @@ export default async function HomePage() {
         <div className="container mx-auto px-6 max-w-7xl">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
             <div className="max-w-xl">
-              <h3 className="text-secondary text-sm font-bold uppercase tracking-[0.2em] mb-3 glow-text">Servicios Destacados</h3>
-              <h2 className="text-4xl font-bold text-white font-display">Portal de Sanación</h2>
+              <h2 className="text-secondary text-sm font-bold uppercase tracking-[0.2em] mb-3 glow-text">Servicios Destacados</h2>
+              <p className="text-4xl font-bold text-white font-display">Portal de Sanación</p>
             </div>
             <Link href="/servicios" className="text-primary hover:text-primary-hover font-black uppercase tracking-[0.3em] text-[10px] flex items-center gap-3 group border-b border-primary/20 pb-2">
               Explorar todos los servicios

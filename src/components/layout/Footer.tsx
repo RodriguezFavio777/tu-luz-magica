@@ -24,6 +24,7 @@ export function Footer() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/50 hover:bg-primary hover:text-white transition-all border border-white/5"
+                                aria-label="Síguenos en Instagram"
                             >
                                 <Instagram className="w-5 h-5" />
                             </Link>
@@ -32,6 +33,7 @@ export function Footer() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/50 hover:bg-primary hover:text-white transition-all border border-white/5 relative group"
+                                aria-label="Síguenos en TikTok"
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -53,6 +55,7 @@ export function Footer() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/50 hover:bg-primary hover:text-white transition-all border border-white/5"
+                                aria-label="Síguenos en YouTube"
                             >
                                 <Youtube className="w-5 h-5" />
                             </Link>

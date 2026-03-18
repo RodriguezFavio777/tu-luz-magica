@@ -55,6 +55,7 @@ function UserMenu() {
                 onClick={() => setIsOpen(!isOpen)}
                 className="flex items-center gap-2 p-1 rounded-full border border-white/10 hover:border-primary/50 transition-colors"
                 aria-expanded={isOpen}
+                aria-label="Menú de usuario"
             >
                 {user.user_metadata?.avatar_url ? (
                     <Image
@@ -230,6 +231,7 @@ export function Navbar() {
                         <button
                             onClick={() => setCartOpen(true)}
                             className="relative p-2 group"
+                            aria-label="Ver carrito"
                         >
                             <ShoppingCart className="w-6 h-6 text-white/70 group-hover:text-white transition-colors" />
                             {itemCount > 0 && (
@@ -248,6 +250,7 @@ export function Navbar() {
                         <button
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                             className="md:hidden text-white"
+                            aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
                         >
                             {mobileMenuOpen ? <X /> : <Menu />}
                         </button>

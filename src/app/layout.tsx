@@ -14,6 +14,7 @@ const fraunces = Fraunces({
 const manrope = Manrope({
   variable: "--font-manrope",
   subsets: ["latin"],
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
