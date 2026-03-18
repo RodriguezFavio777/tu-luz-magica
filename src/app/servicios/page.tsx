@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: 'Servicios de Sanación y Tarot | Tu Luz Mágica',
         description: 'Explora nuestras lecturas de tarot, rituales energéticos y sesiones de sanación holística.',
-        images: ['/tarot_mystical_bg.png'],
+        images: ['/tarot_mystical_bg.webp'],
     },
 }
 
@@ -38,7 +38,7 @@ export default async function ServicesPage({
             <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 z-0">
                     <Image
-                        src="/tarot_mystical_bg.png"
+                        src="/tarot_mystical_bg.webp"
                         alt="Portal Sagrado de Servicios Espirituales"
                         fill
                         priority

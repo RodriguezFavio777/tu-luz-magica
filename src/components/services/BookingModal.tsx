@@ -64,27 +64,27 @@ export function BookingModal({ isOpen, onClose, onConfirm, serviceName, serviceI
 
         const currentSlotLocal = `${datePart}T${hoursStr}:${minutesStr}:00`;
 
-        // Check if the slot is in the past for today's date
+        // Create a local Date object for the current slot time
+        const slotDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), hours, minutes, 0);
+
+        // Get the current time in Buenos Aires as a comparable local Date
+        const baTimeStr = new Date().toLocaleString("en-US", { timeZone: "America/Argentina/Buenos_Aires" });
+        const nowBA = new Date(baTimeStr);
+
+        // If the slot is in the past compared strictly to Buenos Aires time, mark as busy
+        if (slotDate < nowBA) {
+            return true;
+        }
+
+        // Check if the slot represents a specific time in Buenos Aires server slots
         const options: Intl.DateTimeFormatOptions = {
             timeZone: 'America/Argentina/Buenos_Aires',
             year: 'numeric', month: '2-digit', day: '2-digit',
             hour: '2-digit', minute: '2-digit', second: '2-digit',
-            hour12: false
+            hour12: false,
+            hourCycle: 'h23'
         };
         const formatter = new Intl.DateTimeFormat('en-CA', options);
-
-        const now = new Date();
-        const nowParts = formatter.formatToParts(now);
-        const nYear = nowParts.find(p => p.type === 'year')?.value;
-        const nMonth = nowParts.find(p => p.type === 'month')?.value;
-        const nDay = nowParts.find(p => p.type === 'day')?.value;
-        const nHour = nowParts.find(p => p.type === 'hour')?.value;
-        const nMin = nowParts.find(p => p.type === 'minute')?.value;
-        const nowLocal = `${nYear}-${nMonth}-${nDay}T${nHour}:${nMin}:00`;
-
-        if (currentSlotLocal < nowLocal) {
-            return true;
-        }
 
         // The slot represents a specific time in Buenos Aires
         // We compare it by formatting each busy slot to Buenos Aires time

@@ -15,7 +15,7 @@ export function HeroSection() {
                 <div className="absolute inset-0 bg-linear-to-b from-background/30 via-transparent to-background z-10" />
                 <div className="absolute inset-0 bg-linear-to-t from-background via-transparent to-transparent z-10" />
                 <Image
-                    src="/cosmic_sky_stars_nebula_mystical_v2_1770752822948.webp"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDC8q67O81k9lwpZ5wtZdSJJiwGLnXK946JcUM0P0JINvIL0tl0UbzsVqS2lA7fP7eaTBBD8ttN1UvOiT_LuCnDScEcxIxWEOxciwHPFEecMeQvq4Rz0fypMd1ANYtsiY1c5KUUyc-m82zlMmC52yi8zkVqEh262U5cgNjjIUzMIDpcgA9UQuRGLJdfnW8WHinGasIfFfUqBTC6icoBsyqEI3_Drlnpu_tQkqEzkWhbLVJ33aILwAZ0Hr1lGCiLHyQH5_eid0iN7kA"
                     alt="Tu Luz Mágica"
                     fill
                     priority
@@ -40,7 +40,7 @@ export function HeroSection() {
                     <h1 className="text-5xl md:text-7xl lg:text-8xl font-black leading-[0.95] tracking-tighter text-white mb-8 font-sans drop-shadow-[0_4px_10px_rgba(0,0,0,0.5)]">
                         Ilumina tu <br />
                         <span className="font-display bg-linear-to-r from-primary via-[#d63384] to-[#fa9acb] bg-clip-text text-transparent italic pr-3 drop-shadow-[0_0_25px_rgba(244,114,182,0.6)]">Esencia</span>
-                        <span className="font-display bg-linear-to-r from-accent via-[#fcd34d] to-accent bg-clip-text text-transparent pl-3 drop-shadow-[0_0_25px_rgba(255,215,0,0.6)]">Sagrada</span>
+                        <span className="font-display bg-linear-to-r from-[#fbbf24] via-[#fef08a] to-[#d97706] bg-clip-text text-transparent pl-3 drop-shadow-[0_0_25px_rgba(255,215,0,0.6)]">Sagrada</span>
                     </h1>
 
 
