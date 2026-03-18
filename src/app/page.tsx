@@ -9,10 +9,10 @@ import { AboutMeSection } from '@/components/home/AboutMeSection'
 
 // Dynamic imports for below-the-fold components
 const NewsCarousel = dynamic(() => import('@/components/home/NewsCarousel').then(m => m.NewsCarousel), {
-  loading: () => <div className="h-96 w-full animate-pulse bg-surface-accent/20" />
+  loading: () => <div className="h-[600px] w-full animate-pulse bg-surface-accent/20 rounded-4xl" />
 })
 const SusurrosGallery = dynamic(() => import('@/components/home/SusurrosGallery').then(m => m.SusurrosGallery), {
-  loading: () => <div className="h-96 w-full animate-pulse bg-background/20" />
+  loading: () => <div className="h-[800px] w-full animate-pulse bg-background/20 rounded-4xl" />
 })
 const HomeCTA = dynamic(() => import('@/components/home/HomeCTA').then(m => m.HomeCTA))
 
@@ -48,12 +48,16 @@ export default async function HomePage() {
         <div className="container mx-auto px-6 max-w-7xl">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
             <div className="max-w-xl">
-              <h2 className="text-secondary text-sm font-bold uppercase tracking-[0.2em] mb-3 glow-text">Servicios Destacados</h2>
+              <h2 className="text-secondary text-sm font-bold uppercase tracking-[0.2em] mb-3 glow-text text-balance">Servicios Destacados</h2>
               <p className="text-4xl font-bold text-white font-display">Portal de Sanación</p>
             </div>
-            <Link href="/servicios" className="text-primary hover:text-primary-hover font-black uppercase tracking-[0.3em] text-[10px] flex items-center gap-3 group border-b border-primary/20 pb-2">
+            <Link
+              href="/servicios"
+              aria-label="Ver todos los servicios disponibles"
+              className="text-primary hover:text-primary-hover font-black uppercase tracking-[0.3em] text-[10px] flex items-center gap-3 group border-b border-primary/20 pb-2 transition-all"
+            >
               Explorar todos los servicios
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" aria-hidden="true" />
             </Link>
           </div>
 

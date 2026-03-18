@@ -85,7 +85,7 @@ export function NewsCarousel() {
                                 <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 font-display leading-tight">
                                     {product.name}
                                 </h2>
-                                <p className="text-white/60 text-lg mb-8 max-w-md line-clamp-3">
+                                <p className="text-white/70 text-lg mb-8 max-w-md line-clamp-3">
                                     {product.description}
                                 </p>
                                 <div className="flex flex-wrap items-center gap-6">
@@ -96,9 +96,10 @@ export function NewsCarousel() {
                                     {hasVariants ? (
                                         <button
                                             onClick={() => setIsModalOpen(true)}
+                                            aria-label={`Ver opciones y variantes para ${product.name}`}
                                             className="bg-primary hover:bg-[#fa9acb] text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 shadow-primary/20"
                                         >
-                                            <Plus className="w-5 h-5" />
+                                            <Plus className="w-5 h-5" aria-hidden="true" />
                                             Ver Opciones
                                         </button>
                                     ) : (
@@ -114,11 +115,16 @@ export function NewsCarousel() {
                                 <button
                                     key={idx}
                                     onClick={() => setActiveIndex(idx)}
+                                    aria-label={`Ver producto ${idx + 1}`}
                                     className={`h-1 rounded-full transition-all duration-300 ${idx === activeIndex ? 'w-12 bg-primary' : 'w-4 bg-white/10 hover:bg-white/30'}`}
                                 />
                             ))}
-                            <button onClick={() => setIsPaused(!isPaused)} className="ml-4 text-white/30 hover:text-white transition-colors">
-                                {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
+                            <button
+                                onClick={() => setIsPaused(!isPaused)}
+                                aria-label={isPaused ? "Reanudar carrusel" : "Pausar carrusel"}
+                                className="ml-4 text-white/30 hover:text-white transition-colors"
+                            >
+                                {isPaused ? <Play className="w-4 h-4" aria-hidden="true" /> : <Pause className="w-4 h-4" aria-hidden="true" />}
                             </button>
                         </div>
                     </div>

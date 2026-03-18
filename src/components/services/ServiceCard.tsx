@@ -38,11 +38,15 @@ export function ServiceCard({ id, title, description, price, duration, image, ic
             >
                 <div className="flex flex-col h-full">
                     {/* Image Section - Clickable */}
-                    <Link href={`/servicios/${id}`} className="block relative h-64 overflow-hidden">
+                    <Link
+                        href={`/servicios/${id}`}
+                        aria-label={`Ver detalles del servicio: ${title}`}
+                        className="block relative h-64 overflow-hidden"
+                    >
                         <div className="absolute inset-0 bg-linear-to-t from-background via-transparent to-transparent z-10"></div>
                         <Image
                             src={image}
-                            alt={title}
+                            alt={`Imagen representativa del servicio ${title}`}
                             fill
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             className="object-cover group-hover:scale-110 transition-transform duration-2000"
@@ -52,12 +56,16 @@ export function ServiceCard({ id, title, description, price, duration, image, ic
 
                     {/* Content Section */}
                     <div className="p-8 flex flex-col grow">
-                        <Link href={`/servicios/${id}`} className="block">
-                            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6 shadow-[0_0_20px_rgba(244,114,182,0.15)] border border-primary/20 group-hover:scale-110 group-hover:rotate-6 transition-transform">
+                        <Link
+                            href={`/servicios/${id}`}
+                            aria-label={`Saber más sobre ${title}`}
+                            className="block"
+                        >
+                            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6 shadow-[0_0_20px_rgba(244,114,182,0.15)] border border-primary/20 group-hover:scale-110 group-hover:rotate-6 transition-transform" aria-hidden="true">
                                 {icon}
                             </div>
                             <h4 className="text-2xl font-bold text-white mb-4 font-display leading-tight group-hover:text-primary transition-colors">{title}</h4>
-                            <p className="text-white/50 text-sm font-body mb-8 leading-relaxed h-20 overflow-hidden line-clamp-3">
+                            <p className="text-white/70 text-sm font-body mb-8 leading-relaxed h-20 overflow-hidden line-clamp-3">
                                 {description}
                             </p>
                         </Link>
@@ -73,17 +81,19 @@ export function ServiceCard({ id, title, description, price, duration, image, ic
                             {isInCart ? (
                                 <Link
                                     href="/checkout"
+                                    aria-label="Ir al carrito para finalizar la compra"
                                     className="w-full bg-green-500/20 text-green-400 font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 border border-green-500/50 hover:bg-green-500/30 transition-all"
                                 >
-                                    <ShoppingBag className="w-5 h-5" />
+                                    <ShoppingBag className="w-5 h-5" aria-hidden="true" />
                                     En tu Carrito
                                 </Link>
                             ) : (
                                 <Link
                                     href={`/servicios/${id}`}
+                                    aria-label={`Ver opciones de reserva para ${title}`}
                                     className="w-full bg-primary hover:bg-[#fa9acb] text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 shadow-primary/20"
                                 >
-                                    <Plus className="w-5 h-5" />
+                                    <Plus className="w-5 h-5" aria-hidden="true" />
                                     Ver Opciones
                                 </Link>
                             )}

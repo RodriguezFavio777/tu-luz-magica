@@ -192,21 +192,25 @@ export function Navbar() {
                 <div className="max-w-[1280px] mx-auto px-6 flex items-center justify-between">
                     {/* Logo */}
                     <div className="flex items-center gap-6">
-                        <Link href="/" className="flex items-center gap-3 group">
-                            <TriquetaLogo size={42} className="group-hover:rotate-12 transition-transform duration-500" />
-                            <h1 className="text-2xl font-bold tracking-tight font-display bg-linear-to-r from-white to-white/70 bg-clip-text text-transparent hidden md:block">
+                        <Link
+                            href="/"
+                            aria-label="Volver al inicio - Tu Luz Mágica"
+                            className="flex items-center gap-3 group"
+                        >
+                            <TriquetaLogo size={42} className="group-hover:rotate-12 transition-transform duration-500" aria-hidden="true" />
+                            <span className="text-2xl font-bold tracking-tight font-display bg-linear-to-r from-white to-white/70 bg-clip-text text-transparent hidden md:block">
                                 Tu Luz Mágica
-                            </h1>
+                            </span>
                         </Link>
 
                         {/* Moon Phase - Desktop */}
-                        <div className="hidden lg:block border-l border-white/10 pl-6 ml-2">
+                        <div className="hidden lg:block border-l border-white/10 pl-6 ml-2" aria-hidden="true">
                             <MoonPhaseIndicator />
                         </div>
                     </div>
 
                     {/* Navigation */}
-                    <nav className="hidden md:flex items-center gap-10">
+                    <nav className="hidden md:flex items-center gap-10" aria-label="Navegación principal">
                         {[
                             { name: 'Inicio', path: '/' },
                             { name: 'Servicios', path: '/servicios' },
@@ -216,9 +220,10 @@ export function Navbar() {
                             <Link
                                 key={link.path}
                                 href={link.path}
+                                aria-current={isActive(link.path) ? 'page' : undefined}
                                 className={`text-sm font-medium transition-colors ${isActive(link.path)
                                     ? 'text-primary font-bold'
-                                    : 'text-white/70 hover:text-primary'
+                                    : 'text-white/80 hover:text-primary'
                                     }`}
                             >
                                 {link.name}
@@ -231,9 +236,9 @@ export function Navbar() {
                         <button
                             onClick={() => setCartOpen(true)}
                             className="relative p-2 group"
-                            aria-label="Ver carrito"
+                            aria-label={`Ver carrito ${itemCount > 0 ? `(${itemCount} productos)` : ''}`}
                         >
-                            <ShoppingCart className="w-6 h-6 text-white/70 group-hover:text-white transition-colors" />
+                            <ShoppingCart className="w-6 h-6 text-white/80 group-hover:text-white transition-colors" aria-hidden="true" />
                             {itemCount > 0 && (
                                 <HydratedBadge count={itemCount} />
                             )}
@@ -242,17 +247,22 @@ export function Navbar() {
                         {/* User Auth */}
                         <UserMenu />
 
-                        <Link href="/servicios" className="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-[0_4px_20px_rgba(244,114,182,0.3)] hover:scale-105 active:scale-95">
-                            <Calendar className="w-4 h-4" />
+                        <Link
+                            href="/servicios"
+                            aria-label="Reservar una sesión"
+                            className="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-[0_4px_20px_rgba(244,114,182,0.3)] hover:scale-105 active:scale-95"
+                        >
+                            <Calendar className="w-4 h-4" aria-hidden="true" />
                             Reservar Sesión
                         </Link>
 
                         <button
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                             className="md:hidden text-white"
+                            aria-expanded={mobileMenuOpen}
                             aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
                         >
-                            {mobileMenuOpen ? <X /> : <Menu />}
+                            {mobileMenuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
                         </button>
                     </div>
                 </div>

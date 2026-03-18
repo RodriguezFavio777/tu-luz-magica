@@ -12,10 +12,10 @@ export function Footer() {
                 <div className="grid md:grid-cols-5 gap-8 mb-20">
                     <div className="col-span-1 md:col-span-2">
                         <div className="flex items-center gap-3 mb-8">
-                            <TriquetaLogo size={32} />
+                            <TriquetaLogo size={32} aria-hidden="true" />
                             <h4 className="text-white text-xl font-bold font-display">Tu Luz Mágica</h4>
                         </div>
-                        <p className="text-white/40 text-sm leading-relaxed mb-8 font-body">
+                        <p className="text-white/70 text-sm leading-relaxed mb-8 font-body">
                             Acompañándote a descubrir el poder sagrado que reside en ti a través de la sabiduría ancestral y el amor incondicional.
                         </p>
                         <div className="flex gap-4">
@@ -26,7 +26,7 @@ export function Footer() {
                                 className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/50 hover:bg-primary hover:text-white transition-all border border-white/5"
                                 aria-label="Síguenos en Instagram"
                             >
-                                <Instagram className="w-5 h-5" />
+                                <Instagram className="w-5 h-5" aria-hidden="true" />
                             </Link>
                             <Link
                                 href={siteConfig.social.tiktok}
@@ -46,6 +46,7 @@ export function Footer() {
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
                                     className="w-5 h-5"
+                                    aria-hidden="true"
                                 >
                                     <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
                                 </svg>
@@ -57,7 +58,7 @@ export function Footer() {
                                 className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/50 hover:bg-primary hover:text-white transition-all border border-white/5"
                                 aria-label="Síguenos en YouTube"
                             >
-                                <Youtube className="w-5 h-5" />
+                                <Youtube className="w-5 h-5" aria-hidden="true" />
                             </Link>
                         </div>
                     </div>
@@ -70,7 +71,7 @@ export function Footer() {
                                 { name: 'Tienda Holística', href: '/productos' },
                             ].map((item) => (
                                 <li key={item.name}>
-                                    <Link href={item.href} className="text-white/40 hover:text-primary transition-colors text-sm font-body">
+                                    <Link href={item.href} className="text-white/60 hover:text-primary transition-colors text-sm font-body">
                                         {item.name}
                                     </Link>
                                 </li>
@@ -85,7 +86,7 @@ export function Footer() {
                                 { name: 'Preguntas Frecuentes', href: '/preguntas-frecuentes' },
                             ].map((item) => (
                                 <li key={item.name}>
-                                    <Link href={item.href} className="text-white/40 hover:text-primary transition-colors text-sm font-body">
+                                    <Link href={item.href} className="text-white/60 hover:text-primary transition-colors text-sm font-body">
                                         {item.name}
                                     </Link>
                                 </li>
@@ -100,22 +101,22 @@ export function Footer() {
                                 { name: 'Términos y Condiciones', href: '/terminos-condiciones' },
                             ].map((item) => (
                                 <li key={item.name}>
-                                    <Link href={item.href} className="text-white/40 hover:text-primary transition-colors text-sm font-body">
+                                    <Link href={item.href} className="text-white/60 hover:text-primary transition-colors text-sm font-body">
                                         {item.name}
                                     </Link>
                                 </li>
                             ))}
                         </ul>
                     </div>
-                    <div className="text-white/30 text-sm flex flex-col justify-end">
-                        <p className="italic">&quot;Donde la magia se encuentra con el alma.&quot;</p>
+                    <div className="text-white/40 text-sm flex flex-col justify-end">
+                        <p className="italic font-display">&quot;Donde la magia se encuentra con el alma.&quot;</p>
                     </div>
                 </div>
                 <div className="border-t border-white/5 pt-12 flex flex-col md:flex-row justify-between items-center gap-6 text-center">
-                    <p className="text-white/20 text-[10px] font-body">© 2026 Tu Luz Mágica by Camí. Todos los derechos reservados.</p>
-                    <div className="flex items-center gap-4 text-white/20 text-[10px] font-body uppercase tracking-[0.2em]">
+                    <p className="text-white/40 text-[10px] font-body">© 2026 Tu Luz Mágica by Camí. Todos los derechos reservados.</p>
+                    <div className="flex items-center gap-4 text-white/40 text-[10px] font-body uppercase tracking-[0.2em]">
                         <span>Hecho con amor y magia</span>
-                        <Heart className="w-3 h-3 text-primary fill-current" />
+                        <Heart className="w-3 h-3 text-primary fill-current" aria-hidden="true" />
                     </div>
                 </div>
             </div>
