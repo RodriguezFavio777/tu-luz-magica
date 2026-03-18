@@ -66,6 +66,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className="dark" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://lh3.googleusercontent.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://xnjkhtvaybxckbqliemn.supabase.co" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://s3c.nyc3.cdn.digitaloceanspaces.com" crossOrigin="anonymous" />
+      </head>
       <body
         className={`${fraunces.variable} ${manrope.variable} font-body antialiased selection:bg-pink-400 selection:text-white`}
       >
