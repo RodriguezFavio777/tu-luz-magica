@@ -93,7 +93,7 @@ export function SusurrosGallery() {
                 </div>
 
                 {loading ? (
-                    <div className="flex flex-col items-center justify-center py-20 gap-4">
+                    <div className="flex flex-col items-center justify-center min-h-[800px] gap-4">
                         <Loader2 className="w-10 h-10 text-primary animate-spin" aria-hidden="true" />
                         <p className="text-white/40 animate-pulse uppercase tracking-widest text-xs">Escuchando los susurros...</p>
                     </div>

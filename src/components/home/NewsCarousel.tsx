@@ -46,7 +46,13 @@ export function NewsCarousel() {
         }
     }, [isPaused, isModalOpen, products.length])
 
-    if (products.length === 0) return null
+    if (products.length === 0) {
+        return (
+            <section className="py-24 bg-surface-accent relative overflow-hidden flex items-center justify-center min-h-[600px]">
+                <div className="absolute inset-x-0 h-full w-full animate-pulse bg-surface/50" />
+            </section>
+        )
+    }
 
     const product = products[activeIndex]
     const hasVariants = product.variants && Array.isArray(product.variants) && product.variants.length > 0;
