@@ -12,10 +12,10 @@ import {
 // Images (Unsplash placeholders unless specified)
 const IMAGE_HERO = "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=2694&auto=format&fit=crop"
 const IMAGE_PROFILE = "/cami-profile.webp"
-const IMAGE_GRID_1 = "/tarot_card_reading_close_up_mystical_1770752736602.png" // Tarot
-const IMAGE_GRID_2 = "/healing_crystals_amethyst_quartz_altar_1770752752291.png" // Crystals
-const IMAGE_GRID_3 = "/lit_candles_ritual_mystical_atmosphere_1770752768490.png" // Candle
-const IMAGE_GRID_4 = "/cosmic_sky_stars_nebula_mystical_v2_1770752822948.png" // Sky
+const IMAGE_GRID_1 = "/tarot_card_reading_close_up_mystical_1770752736602.webp" // Tarot
+const IMAGE_GRID_2 = "/healing_crystals_amethyst_quartz_altar_1770752752291.webp" // Crystals
+const IMAGE_GRID_3 = "/lit_candles_ritual_mystical_atmosphere_1770752768490.webp" // Candle
+const IMAGE_GRID_4 = "/cosmic_sky_stars_nebula_mystical_v2_1770752822948.webp" // Sky
 
 export function AboutClient() {
     const [formData, setFormData] = useState({ name: '', email: '', phone: '', subject: 'lectura', message: '' })
