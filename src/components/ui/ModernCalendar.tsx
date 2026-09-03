@@ -71,10 +71,10 @@ export function ModernCalendar({ selectedDate, onDateSelect, minDate = new Date(
     };
 
     return (
-        <div className="bg-[#1a151b] border border-white/5 rounded-3xl p-6 shadow-inner w-full max-w-[320px]">
+        <div className="bg-[#1a151b] border border-white/5 rounded-3xl p-3 sm:p-6 shadow-inner w-full max-w-[320px] mx-auto">
             {/* Header */}
-            <div className="flex justify-between items-center mb-6">
-                <span className="text-white font-bold text-lg">
+            <div className="flex justify-between items-center mb-4 sm:mb-6">
+                <span className="text-white font-bold text-base sm:text-lg">
                     {monthNames[month]} {year}
                 </span>
                 <div className="flex gap-2">
@@ -96,16 +96,16 @@ export function ModernCalendar({ selectedDate, onDateSelect, minDate = new Date(
             </div>
 
             {/* Weekdays */}
-            <div className="grid grid-cols-7 mb-4">
+            <div className="grid grid-cols-7 mb-3 sm:mb-4">
                 {weekDays.map(day => (
-                    <div key={day} className="text-center text-[10px] font-bold text-white/40 uppercase">
+                    <div key={day} className="text-center text-[10px] sm:text-xs font-bold text-white/40 uppercase">
                         {day}
                     </div>
                 ))}
             </div>
 
             {/* Days Grid */}
-            <div className="grid grid-cols-7 gap-y-2">
+            <div className="grid grid-cols-7 gap-y-1.5 sm:gap-y-2">
                 {daysArray.map((d, index) => {
                     const isSelected = selectedDate ? isSameDay(d.date, selectedDate) : false;
                     const isDisabled = isPastDate(d.date);
@@ -123,7 +123,7 @@ export function ModernCalendar({ selectedDate, onDateSelect, minDate = new Date(
                                     setCurrentMonth(new Date(d.date.getFullYear(), d.date.getMonth(), 1));
                                 }
                             }}
-                            className={`w-10 h-10 mx-auto flex items-center justify-center rounded-full text-sm font-medium transition-all ${isSelected
+                            className={`w-8 h-8 sm:w-10 sm:h-10 mx-auto flex items-center justify-center rounded-full text-xs sm:text-sm font-medium transition-all ${isSelected
                                 ? 'bg-primary text-white font-bold shadow-[0_0_15px_rgba(244,114,182,0.5)]'
                                 : isDisabled
                                     ? 'text-white/10 cursor-not-allowed'

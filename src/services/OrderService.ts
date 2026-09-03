@@ -9,8 +9,11 @@ export interface Order {
     subtotal: number
     shipping_cost: number
     total: number
-    status: string
+    status?: string
     payment_status: string
+    payment_method?: string | null
+    mercadopago_preference_id?: string | null
+    mercadopago_payment_id?: string | null
     requires_shipping: boolean
     shipping_address: string | null
     shipping_city: string | null
@@ -53,10 +56,39 @@ export class OrderService {
         return data
     }
 
-    static async updateStatus(id: string, status: string, paymentStatus?: string) {
+    static async updateStatus(
+        id: string,
+        statusOrPaymentStatus: string,
+        paymentStatusOrPaymentId?: string,
+        mercadopagoPaymentId?: string
+    ) {
         const supabase = await createClient()
-        const updateData: Partial<Order> = { status }
-        if (paymentStatus) updateData.payment_status = paymentStatus
+
+        // Resolve payment_status and mercadopago_payment_id across invocation signatures
+        let targetPaymentStatus = statusOrPaymentStatus
+        let paymentId = mercadopagoPaymentId
+
+        if (mercadopagoPaymentId) {
+            targetPaymentStatus = paymentStatusOrPaymentId || statusOrPaymentStatus
+            paymentId = mercadopagoPaymentId
+        } else if (paymentStatusOrPaymentId) {
+            if (['pending', 'approved', 'rejected', 'cancelled', 'paid'].includes(paymentStatusOrPaymentId)) {
+                targetPaymentStatus = paymentStatusOrPaymentId
+            } else {
+                paymentId = paymentStatusOrPaymentId
+            }
+        }
+
+        if (targetPaymentStatus === 'paid') {
+            targetPaymentStatus = 'approved'
+        }
+
+        const updateData: Record<string, any> = {
+            payment_status: targetPaymentStatus
+        }
+        if (paymentId) {
+            updateData.mercadopago_payment_id = paymentId
+        }
 
         const { data, error } = await supabase
             .from('orders')

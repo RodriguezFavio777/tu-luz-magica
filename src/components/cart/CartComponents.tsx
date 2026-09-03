@@ -155,6 +155,7 @@ export const AddToCartButton: React.FC<AddToCartProps> = ({ product, type, booki
 export const CartSummary: React.FC = () => {
     const { subtotal, itemCount } = useCart()
     const { requiresShipping, hasMixedCart } = useCheckout()
+    const router = useRouter()
 
     if (itemCount === 0) return null
 
@@ -188,7 +189,10 @@ export const CartSummary: React.FC = () => {
                     <span>${subtotal.toLocaleString('es-AR')}</span>
                 </div>
 
-                <button className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-4 rounded-2xl transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-3 active:scale-95">
+                <button
+                    onClick={() => router.push('/checkout')}
+                    className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-4 rounded-2xl transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-3 active:scale-95"
+                >
                     <CreditCard className="w-5 h-5" />
                     Finalizar Compra
                 </button>

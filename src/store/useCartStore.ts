@@ -65,18 +65,23 @@ export const useCartStore = create<CartStore>()(
             // Add item to cart
             addItem: (item) => {
                 set((state) => {
+                    const itemToAdd = item.type === 'service' ? { ...item, quantity: 1 } : item
                     const existingItemIndex = state.items.findIndex(
-                        (i) => i.id === item.id && (i.variantName === item.variantName)
+                        (i) => i.id === itemToAdd.id && (i.variantName === itemToAdd.variantName)
                     )
 
                     if (existingItemIndex > -1) {
                         // Item match (same ID + same Variant), update quantity
                         const updatedItems = [...state.items]
-                        updatedItems[existingItemIndex].quantity += item.quantity
+                        if (updatedItems[existingItemIndex].type === 'service') {
+                            updatedItems[existingItemIndex].quantity = 1
+                        } else {
+                            updatedItems[existingItemIndex].quantity += itemToAdd.quantity
+                        }
                         return { items: updatedItems }
                     } else {
                         // New item (or different variant), add to cart
-                        return { items: [...state.items, item] }
+                        return { items: [...state.items, itemToAdd] }
                     }
                 })
             },
@@ -97,9 +102,11 @@ export const useCartStore = create<CartStore>()(
                         }
                     }
 
-                    const updatedItems = state.items.map((item) =>
-                        item.id === itemId ? { ...item, quantity } : item
-                    )
+                    const updatedItems = state.items.map((item) => {
+                        if (item.id !== itemId) return item
+                        const safeQuantity = item.type === 'service' ? 1 : Math.max(1, Math.floor(quantity))
+                        return { ...item, quantity: safeQuantity }
+                    })
                     return { items: updatedItems }
                 })
             },

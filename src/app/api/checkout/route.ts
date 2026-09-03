@@ -3,6 +3,7 @@ import { OrderService } from '@/services/OrderService'
 import { EmailService } from '@/services/EmailService'
 import { NextResponse } from 'next/server'
 import { CheckoutSchema } from '@/lib/validations'
+import { mercadopago } from '@/lib/mercadopago'
 
 function parseBookingStartTime(startTimeStr: string): Date {
     if (startTimeStr.includes('Todo el día')) {
@@ -32,7 +33,7 @@ export async function POST(request: Request) {
         const {
             user_id, items, subtotal, shipping_cost, total,
             requires_shipping, shipping_address, shipping_city,
-            shipping_postal_code, fullName, email, phone
+            shipping_postal_code, fullName, email, phone, payment_method
         } = validation.data
 
         // 0. Availability Check via Service
@@ -52,6 +53,7 @@ export async function POST(request: Request) {
         const order = await OrderService.create({
             user_id, subtotal, shipping_cost, total,
             payment_status: 'pending',
+            payment_method: payment_method || 'mercadopago',
             requires_shipping, shipping_address,
             shipping_city, shipping_postal_code,
             customer_email: email, customer_name: fullName,
@@ -102,8 +104,8 @@ export async function POST(request: Request) {
 
         await OrderService.addItems(orderItemsToInsert)
 
-        // 3. Send Confirmation Email via Service
-        if (email) {
+        // 3. Send Confirmation Email via Service (ONLY for bank transfer; Mercado Pago orders send upon payment webhook approval)
+        if (email && payment_method === 'transfer') {
             const isBooking = items.some(i => i.type === 'service')
             const emailItems = items.map(i => {
                 let bookingDate, bookingTime;
@@ -134,7 +136,58 @@ export async function POST(request: Request) {
             )
         }
 
-        return NextResponse.json({ success: true, orderId: order.id })
+        let preferenceData: { preferenceId?: string; init_point?: string; sandbox_init_point?: string } = {}
+
+        if (payment_method === 'mercadopago') {
+            try {
+                const host = request.headers.get('host')
+                const proto = request.headers.get('x-forwarded-proto') || 'https'
+                const baseUrl = host ? `${proto}://${host}` : (process.env.NEXT_PUBLIC_SITE_URL || 'https://tuluzmagica.com')
+
+                const prefItems = items.map(item => ({
+                    id: item.id || item.productId,
+                    title: item.name,
+                    unit_price: Math.round(item.price * 100) / 100,
+                    quantity: item.type === 'service' ? 1 : item.quantity,
+                    currency_id: 'ARS'
+                }))
+
+                const preference = await mercadopago.createPreference({
+                    items: prefItems,
+                    shipments: requires_shipping && shipping_cost > 0 ? {
+                        cost: Math.round(shipping_cost * 100) / 100,
+                        mode: 'not_specified'
+                    } : undefined,
+                    back_urls: {
+                        success: `${baseUrl}/checkout/success`,
+                        failure: `${baseUrl}/checkout/failure`,
+                        pending: `${baseUrl}/checkout/pending`
+                    },
+                    auto_return: 'approved',
+                    notification_url: `${baseUrl}/api/webhooks/mercadopago`,
+                    external_reference: order.id,
+                    payer: {
+                        name: fullName,
+                        email: email,
+                        phone: { number: phone }
+                    }
+                })
+
+                preferenceData = {
+                    preferenceId: preference.id,
+                    init_point: preference.init_point,
+                    sandbox_init_point: preference.sandbox_init_point
+                }
+            } catch (prefErr) {
+                console.error('Error generating MP preference in checkout route:', prefErr)
+            }
+        }
+
+        return NextResponse.json({
+            success: true,
+            orderId: order.id,
+            ...preferenceData
+        })
     } catch (error: unknown) {
         console.error('API Checkout Error:', error)
         const message = error instanceof Error ? error.message : 'Internal Server Error'

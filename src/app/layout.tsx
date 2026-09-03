@@ -66,7 +66,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className="dark" suppressHydrationWarning>
+    <html lang="es" className="dark overflow-x-clip max-w-[100vw]" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://lh3.googleusercontent.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://xnjkhtvaybxckbqliemn.supabase.co" crossOrigin="anonymous" />
@@ -85,7 +85,7 @@ export default function RootLayout({
         </Script>
       </head>
       <body
-        className={`${fraunces.variable} ${manrope.variable} font-body antialiased selection:bg-pink-400 selection:text-white`}
+        className={`${fraunces.variable} ${manrope.variable} font-body antialiased selection:bg-pink-400 selection:text-white overflow-x-clip max-w-[100vw]`}
       >
         <AuthProvider>
           <ToastProvider>

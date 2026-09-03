@@ -148,98 +148,102 @@ export function BookingModal({ isOpen, onClose, onConfirm, serviceName, serviceI
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="relative w-full max-w-4xl bg-surface border border-white/10 rounded-3xl p-8 shadow-2xl overflow-hidden"
+                        className="relative w-full max-w-4xl bg-surface border border-white/10 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[calc(100dvh-2rem)]"
                     >
                         {loadingAvailability && (
-                            <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] z-20 flex items-center justify-center rounded-3xl">
+                            <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] z-30 flex items-center justify-center rounded-3xl">
                                 <Loader2 className="w-8 h-8 text-primary animate-spin" />
                             </div>
                         )}
 
                         <button
                             onClick={onClose}
-                            className="absolute top-6 right-6 text-white/40 hover:text-white transition-colors z-10 bg-black/20 p-2 rounded-full"
+                            className="absolute top-4 right-4 sm:top-6 sm:right-6 text-white/40 hover:text-white transition-colors z-20 bg-black/20 p-2 rounded-full"
                         >
                             <X className="w-5 h-5" />
                         </button>
 
-                        <div className="mb-8 flex items-center gap-4">
-                            <div className="p-3 bg-primary/20 rounded-xl">
-                                <Calendar className="w-6 h-6 text-primary" />
+                        <div className="p-4 sm:p-6 md:p-8 pb-4 border-b border-white/5 shrink-0 flex items-center gap-4 pr-14">
+                            <div className="p-2.5 sm:p-3 bg-primary/20 rounded-xl shrink-0">
+                                <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                             </div>
-                            <div>
-                                <h3 className="text-2xl font-bold text-white font-display">Selecciona Fecha y Hora</h3>
-                                <p className="text-primary text-sm font-bold uppercase tracking-widest">{serviceName}</p>
+                            <div className="min-w-0">
+                                <h3 className="text-xl sm:text-2xl font-bold text-white font-display truncate">Selecciona Fecha y Hora</h3>
+                                <p className="text-primary text-xs sm:text-sm font-bold uppercase tracking-widest truncate">{serviceName}</p>
                             </div>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-10 items-stretch">
-                            <div className="flex-1">
-                                <ModernCalendar
-                                    selectedDate={selectedDate}
-                                    onDateSelect={(d) => {
-                                        setSelectedDate(d)
-                                        setTime('')
-                                    }}
-                                />
+                        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+                            <div className="p-4 sm:p-6 md:p-8 overflow-y-auto flex-1 space-y-6">
+                                <div className="flex flex-col md:flex-row gap-6 md:gap-10 items-stretch">
+                                    <div className="flex-1 flex justify-center md:justify-start">
+                                        <ModernCalendar
+                                            selectedDate={selectedDate}
+                                            onDateSelect={(d) => {
+                                                setSelectedDate(d)
+                                                setTime('')
+                                            }}
+                                        />
+                                    </div>
+
+                                    <div className="flex-1 flex flex-col justify-start">
+                                        {enableTimeSelection ? (
+                                            <div className="space-y-4 sm:space-y-6 flex-1">
+                                                <label className="flex items-center gap-2 text-sm font-bold text-white uppercase tracking-wider font-display">
+                                                    <Clock className="w-4 h-4 text-primary" />
+                                                    HORARIOS DISPONIBLES
+                                                </label>
+                                                <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                                                    {timeSlots.map((slot) => {
+                                                        const busy = isSlotBusy(slot);
+                                                        return (
+                                                            <button
+                                                                key={slot}
+                                                                type="button"
+                                                                disabled={busy}
+                                                                onClick={() => setTime(slot)}
+                                                                className={`py-3 sm:py-4 px-3 sm:px-6 rounded-full text-xs sm:text-sm font-bold transition-all border ${time === slot
+                                                                    ? 'bg-primary text-white border-primary shadow-[0_0_20px_rgba(244,114,182,0.4)] scale-105'
+                                                                    : busy
+                                                                        ? 'bg-black/40 text-white/20 border-white/5 cursor-not-allowed opacity-50'
+                                                                        : 'bg-black/20 text-white/70 border-white/10 hover:bg-white/5 hover:text-white'
+                                                                    }`}
+                                                            >
+                                                                {slot}
+                                                                {busy && <span className="block text-[8px] opacity-60">OCUPADO</span>}
+                                                            </button>
+                                                        )
+                                                    })}
+                                                </div>
+                                                <p className="text-white/40 text-xs italic mt-4 sm:mt-6">
+                                                    Zona horaria: Buenos Aires (GMT-3)
+                                                </p>
+                                            </div>
+                                        ) : (
+                                            <div className="bg-primary/10 border border-primary/20 rounded-2xl p-6 flex flex-col justify-center items-center gap-4 h-full text-center">
+                                                <Clock className="w-8 h-8 text-primary" />
+                                                <h4 className="text-white font-bold text-lg">Servicio de Día Completo</h4>
+                                                <p className="text-sm text-white/70 leading-relaxed max-w-xs">
+                                                    {isDayBusy()
+                                                        ? "Lamentablemente este día ya tiene reservas y no se puede agendar un servicio de día completo."
+                                                        : "Este servicio requiere que se coordine por fuera una vez seleccionado el día, ya que consume energía a lo largo de varias horas."
+                                                    }
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
 
-                            <div className="flex-1 flex flex-col justify-between">
-                                {enableTimeSelection ? (
-                                    <div className="space-y-6 flex-1">
-                                        <label className="flex items-center gap-2 text-sm font-bold text-white uppercase tracking-wider font-display">
-                                            <Clock className="w-4 h-4 text-primary" />
-                                            HORARIOS DISPONIBLES
-                                        </label>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            {timeSlots.map((slot) => {
-                                                const busy = isSlotBusy(slot);
-                                                return (
-                                                    <button
-                                                        key={slot}
-                                                        type="button"
-                                                        disabled={busy}
-                                                        onClick={() => setTime(slot)}
-                                                        className={`py-4 px-6 rounded-full text-sm font-bold transition-all border ${time === slot
-                                                            ? 'bg-primary text-white border-primary shadow-[0_0_20px_rgba(244,114,182,0.4)] scale-105'
-                                                            : busy
-                                                                ? 'bg-black/40 text-white/20 border-white/5 cursor-not-allowed opacity-50'
-                                                                : 'bg-black/20 text-white/70 border-white/10 hover:bg-white/5 hover:text-white'
-                                                            }`}
-                                                    >
-                                                        {slot}
-                                                        {busy && <span className="block text-[8px] opacity-60">OCUPADO</span>}
-                                                    </button>
-                                                )
-                                            })}
-                                        </div>
-                                        <p className="text-white/40 text-xs italic mt-6">
-                                            Zona horaria: Buenos Aires (GMT-3)
-                                        </p>
-                                    </div>
-                                ) : (
-                                    <div className="bg-primary/10 border border-primary/20 rounded-2xl p-6 flex flex-col justify-center items-center gap-4 h-full text-center">
-                                        <Clock className="w-8 h-8 text-primary" />
-                                        <h4 className="text-white font-bold text-lg">Servicio de Día Completo</h4>
-                                        <p className="text-sm text-white/70 leading-relaxed max-w-xs">
-                                            {isDayBusy()
-                                                ? "Lamentablemente este día ya tiene reservas y no se puede agendar un servicio de día completo."
-                                                : "Este servicio requiere que se coordine por fuera una vez seleccionado el día, ya que consume energía a lo largo de varias horas."
-                                            }
-                                        </p>
-                                    </div>
-                                )}
-
-                                <div className="mt-8 pt-8 border-t border-white/10">
-                                    <button
-                                        type="submit"
-                                        disabled={!selectedDate || (enableTimeSelection && !time) || (!enableTimeSelection && isDayBusy())}
-                                        className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-5 rounded-full transition-all shadow-[0_10px_40px_-10px_rgba(244,114,182,0.4)] flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed group active:scale-95"
-                                    >
-                                        <Check className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                                        Confirmar Selección
-                                    </button>
-                                </div>
+                            <div className="p-4 sm:p-6 bg-surface/95 backdrop-blur-md border-t border-white/10 shrink-0 sticky bottom-0 z-20 pb-[max(1rem,env(safe-area-inset-bottom))]">
+                                <button
+                                    type="submit"
+                                    disabled={!selectedDate || (enableTimeSelection && !time) || (!enableTimeSelection && isDayBusy())}
+                                    className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-4 sm:py-5 rounded-full transition-all shadow-[0_10px_40px_-10px_rgba(244,114,182,0.4)] flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed group active:scale-95"
+                                >
+                                    <Check className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                                    Confirmar Selección
+                                </button>
                             </div>
                         </form>
                     </motion.div>

@@ -46,6 +46,7 @@ export function CheckoutForm() {
 
     // Flow States
     const [step, setStep] = useState<'auth' | 'shipping' | 'payment' | 'success'>('auth')
+    const [paymentMethod, setPaymentMethod] = useState<'mercadopago' | 'transfer'>('mercadopago')
     const [loading, setLoading] = useState(false)
     const [globalError, setGlobalError] = useState('')
 
@@ -248,10 +249,13 @@ export function CheckoutForm() {
 
     const handlePayment = async () => {
         setLoading(true)
-        showLoading('Confirmando tu pedido...')
+        showLoading(paymentMethod === 'mercadopago' ? 'Iniciando pago con Mercado Pago...' : 'Confirmando tu pedido...')
 
         try {
-            // Call the API endpoint
+            const shippingCost = requiresShipping && selectedShipping ? selectedShipping.valor : 0
+            const calculatedTotal = subtotal + shippingCost
+
+            // 1. Call the API endpoint to create order and preference
             const response = await fetch('/api/checkout', {
                 method: 'POST',
                 headers: {
@@ -261,8 +265,8 @@ export function CheckoutForm() {
                     user_id: user?.id || null,
                     items,
                     subtotal,
-                    shipping_cost: requiresShipping && selectedShipping ? selectedShipping.valor : 0,
-                    total: subtotal + (requiresShipping && selectedShipping ? selectedShipping.valor : 0),
+                    shipping_cost: shippingCost,
+                    total: calculatedTotal,
                     requires_shipping: requiresShipping,
                     shipping_address: shippingData.address,
                     shipping_city: shippingData.city,
@@ -270,7 +274,8 @@ export function CheckoutForm() {
                     shipping_postal_code: shippingData.zip,
                     fullName: shippingData.fullName,
                     email: shippingData.email,
-                    phone: shippingData.phone
+                    phone: shippingData.phone,
+                    payment_method: paymentMethod
                 }),
             })
 
@@ -280,31 +285,66 @@ export function CheckoutForm() {
                 throw new Error(data.error || 'Error al procesar el pedido')
             }
 
-            // Success
-            setStep('success')
-
-            // WhatsApp Logic
             const orderId = data.orderId || 'PENDIENTE'
 
-            // Simplified WhatsApp logic requested by user
-            const message = encodeURIComponent(`✨ ¡Hola Camí! ✨
+            if (paymentMethod === 'mercadopago') {
+                // If preference was returned by /api/checkout, or fallback to /api/checkout/mercadopago
+                let redirectUrl = data.sandbox_init_point || data.init_point
+                if (!redirectUrl) {
+                    const mpRes = await fetch('/api/checkout/mercadopago', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            orderId,
+                            items,
+                            shipping_cost: shippingCost,
+                            customer: {
+                                fullName: shippingData.fullName,
+                                email: shippingData.email,
+                                phone: shippingData.phone
+                            }
+                        })
+                    })
+                    if (!mpRes.ok) {
+                        const mpErr = await mpRes.json().catch(() => ({}))
+                        throw new Error(mpErr.error || 'No se pudo generar el enlace de pago de Mercado Pago. Por favor reintenta.')
+                    }
+                    const mpData = await mpRes.json()
+                    redirectUrl = mpData.sandbox_init_point || mpData.init_point
+                }
+
+                if (!redirectUrl) {
+                    throw new Error('No se pudo generar el enlace de pago de Mercado Pago. Por favor reintenta.')
+                }
+
+                // Preserve cart before redirect (recovery supported via /checkout/failure; /checkout/success clears cart on arrival)
+                if (typeof window !== 'undefined') {
+                    localStorage.removeItem('checkout_shipping_data')
+                    window.location.assign(redirectUrl)
+                    return
+                }
+            } else {
+                // WhatsApp Transfer Flow
+                setStep('success')
+
+                const message = encodeURIComponent(`✨ ¡Hola Camí! ✨
 Te escribo porque quiero avanzar con mi pedido #${orderId.slice(0, 8)}.
 
 👤 Nombre: ${shippingData.fullName || user?.email || 'Anónimo'}
-💰 Monto a Pagar: $${(subtotal + (requiresShipping && selectedShipping ? selectedShipping.valor : 0)).toLocaleString('es-AR')}
+💰 Monto a Pagar: $${calculatedTotal.toLocaleString('es-AR')}
 
 ¿Me pasas los datos para realizar la transferencia? ¡Gracias!`)
 
-            const waLink = `https://wa.me/5491137017109?text=${message}`
+                const waLink = `https://wa.me/5491137017109?text=${message}`
 
-            setTimeout(() => {
-                clearCart()
-                if (typeof window !== 'undefined') {
-                    localStorage.removeItem('checkout_shipping_data')
-                    window.location.assign(waLink)
-                }
-            }, 1000)
-
+                setTimeout(() => {
+                    clearCart()
+                    if (typeof window !== 'undefined') {
+                        localStorage.removeItem('checkout_shipping_data')
+                        window.location.assign(waLink)
+                    }
+                }, 1000)
+            }
         } catch (error: unknown) {
             console.error('Error creating order:', error)
             const errorMessage = error instanceof Error ? error.message : String(error)
@@ -651,25 +691,91 @@ Te escribo porque quiero avanzar con mi pedido #${orderId.slice(0, 8)}.
                             </div>
                         </div>
 
-                        <button
-                            onClick={handlePayment}
-                            disabled={loading}
-                            className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl transition-colors shadow-lg shadow-green-500/20 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {loading ? (
-                                <>
-                                    <Loader2 className="w-5 h-5 animate-spin" />
-                                    Procesando...
-                                </>
-                            ) : (
-                                <>
-                                    <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" width={24} height={24} className="h-6 w-6" alt="WA" />
-                                    Confirmar Pedido por WhatsApp
-                                </>
-                            )}
-                        </button>
+                        <div className="mb-6">
+                            <h4 className="font-bold text-white mb-3 text-sm">Método de Pago</h4>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div
+                                    onClick={() => setPaymentMethod('mercadopago')}
+                                    className={`p-4 rounded-xl border flex flex-col text-left transition-all cursor-pointer ${paymentMethod === 'mercadopago'
+                                        ? 'bg-primary/10 border-primary shadow-lg shadow-primary/10'
+                                        : 'bg-black/20 border-white/10 hover:border-white/20'
+                                        }`}
+                                >
+                                    <div className="flex items-center justify-between w-full mb-2">
+                                        <span className="font-bold text-white flex items-center gap-2">
+                                            <CreditCard className="w-5 h-5 text-primary" />
+                                            Mercado Pago
+                                        </span>
+                                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/20 text-primary font-bold">
+                                            Sandbox / Test
+                                        </span>
+                                    </div>
+                                    <p className="text-xs text-white/50">
+                                        Tarjetas de crédito/débito y dinero en cuenta.
+                                    </p>
+                                </div>
+
+                                <div
+                                    onClick={() => setPaymentMethod('transfer')}
+                                    className={`p-4 rounded-xl border flex flex-col text-left transition-all cursor-pointer ${paymentMethod === 'transfer'
+                                        ? 'bg-green-500/10 border-green-500 shadow-lg shadow-green-500/10'
+                                        : 'bg-black/20 border-white/10 hover:border-white/20'
+                                        }`}
+                                >
+                                    <div className="flex items-center justify-between w-full mb-2">
+                                        <span className="font-bold text-white flex items-center gap-2">
+                                            <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" width={18} height={18} alt="WA" />
+                                            Transferencia
+                                        </span>
+                                    </div>
+                                    <p className="text-xs text-white/50">
+                                        Coordinación directa y datos bancarios por WhatsApp.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {paymentMethod === 'mercadopago' ? (
+                            <button
+                                onClick={handlePayment}
+                                disabled={loading}
+                                className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-4 rounded-xl transition-colors shadow-lg shadow-primary/20 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {loading ? (
+                                    <>
+                                        <Loader2 className="w-5 h-5 animate-spin" />
+                                        Redirigiendo a Mercado Pago...
+                                    </>
+                                ) : (
+                                    <>
+                                        <CreditCard className="w-5 h-5" />
+                                        Pagar con Mercado Pago (Modo Prueba)
+                                    </>
+                                )}
+                            </button>
+                        ) : (
+                            <button
+                                onClick={handlePayment}
+                                disabled={loading}
+                                className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl transition-colors shadow-lg shadow-green-500/20 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {loading ? (
+                                    <>
+                                        <Loader2 className="w-5 h-5 animate-spin" />
+                                        Procesando...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" width={24} height={24} className="h-6 w-6" alt="WA" />
+                                        Confirmar Pedido por WhatsApp
+                                    </>
+                                )}
+                            </button>
+                        )}
                         <p className="text-center text-white/30 text-xs mt-4">
-                            Se abrirá WhatsApp para enviar los detalles de tu pedido a Camí.
+                            {paymentMethod === 'mercadopago'
+                                ? 'Serás redirigido al portal seguro de Mercado Pago en modo prueba.'
+                                : 'Se abrirá WhatsApp para enviar los detalles de tu pedido a Camí.'}
                         </p>
                     </motion.div>
                 )}
