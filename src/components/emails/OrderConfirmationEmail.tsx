@@ -120,11 +120,11 @@ export function OrderConfirmationEmail({
                                             <Text className="text-white/60 text-[13px] m-0">{item.quantity}</Text>
                                         </Column>
                                         <Column style={{ width: '15%' }} align="right">
-                                            <Text className="text-white/60 text-[13px] m-0">${item.price.toLocaleString('es-AR')}</Text>
+                                            <Text className="text-white/60 text-[13px] m-0">${(item.price || 0).toLocaleString('es-AR')}</Text>
                                         </Column>
                                         <Column style={{ width: '15%' }} align="right">
                                             <Text className="text-white text-[13px] font-bold m-0">
-                                                ${(item.quantity * item.price).toLocaleString('es-AR')}
+                                                ${((item.quantity || 1) * (item.price || 0)).toLocaleString('es-AR')}
                                             </Text>
                                         </Column>
                                     </Row>
@@ -155,7 +155,7 @@ export function OrderConfirmationEmail({
                                         </Column>
                                         <Column style={{ width: '15%' }} align="right">
                                             <Text className="text-white/80 text-[14px] m-0">
-                                                $ {shippingCost.toLocaleString('es-AR')}
+                                                $ {(shippingCost || 0).toLocaleString('es-AR')}
                                             </Text>
                                         </Column>
                                     </Row>
@@ -168,7 +168,7 @@ export function OrderConfirmationEmail({
                                     </Column>
                                     <Column style={{ width: '15%' }} align="right">
                                         <Text className="text-[#a8eb12] font-bold text-[22px] m-0 drop-shadow-[0_0_15px_rgba(168,235,18,0.3)]">
-                                            $ {totalAmount.toLocaleString('es-AR')}
+                                            $ {(totalAmount || 0).toLocaleString('es-AR')}
                                         </Text>
                                     </Column>
                                 </Row>

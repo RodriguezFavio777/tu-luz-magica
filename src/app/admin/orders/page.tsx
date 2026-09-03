@@ -1,24 +1,26 @@
 'use client'
 
 import React, { useEffect, useState, useCallback } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { Trash2, Search, Package, ChevronDown, Eye } from 'lucide-react'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { OrderDetailModal } from '@/components/admin/OrderDetailModal'
-import { processOrderStatusChange } from '@/lib/actions/adminActions'
+import { processOrderStatusChange, getAdminOrders, deleteOrderAction } from '@/lib/actions/adminActions'
 import { useToast } from '@/context/ToastContext'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 
 export default function AdminOrders() {
     const { showToast } = useToast()
-    const [supabase] = useState(() => createClient())
     interface AdminOrder {
         id: string
         created_at: string
         total: number
         shipping_cost: number
         status: string
+        payment_status?: string | null
+        customer_name?: string | null
+        customer_email?: string | null
+        customer_phone?: string | null
         profiles: {
             full_name: string | null
             email: string | null
@@ -35,29 +37,19 @@ export default function AdminOrders() {
     const fetchOrders = useCallback(async () => {
         try {
             setLoading(true)
-            const { data, error } = await supabase
-                .from('orders')
-                .select(`
-                    *,
-                    profiles:user_id(full_name, email, shipping_address, phone)
-                `)
-                .order('created_at', { ascending: false })
-
-            if (error) throw error
-            setOrders(data || [])
+            const data = await getAdminOrders()
+            setOrders((data || []) as unknown as AdminOrder[])
         } catch (error) {
             console.error('Error fetching orders:', error)
+            showToast('Error al cargar los pedidos.', 'error')
         } finally {
             setLoading(false)
         }
-    }, [supabase])
+    }, [showToast])
 
     useEffect(() => {
         fetchOrders()
     }, [fetchOrders])
-
-
-
 
     const updateOrderStatus = async (orderId: string, newStatus: string) => {
         try {
@@ -66,8 +58,21 @@ export default function AdminOrders() {
 
             if (result.success) {
                 // Optimistic update locally
-                setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o))
-                showToast(`Estado del pedido actualizado a: ${newStatus}`, 'success')
+                setOrders(prevOrders => prevOrders.map(o => o.id === orderId ? {
+                    ...o,
+                    status: newStatus,
+                    payment_status: newStatus === 'paid' ? 'approved' : (newStatus === 'cancelled' ? 'cancelled' : o.payment_status)
+                } : o))
+                const statusNames: Record<string, string> = {
+                    'paid': 'Pagado',
+                    'pending': 'Pendiente',
+                    'shipped': 'Enviado',
+                    'completed': 'Completado',
+                    'cancelled': 'Cancelado'
+                }
+                showToast(`Estado del pedido actualizado a: ${statusNames[newStatus] || newStatus}`, 'success')
+            } else {
+                showToast(`Error al actualizar el estado: ${result.error || 'Error desconocido'}`, 'error')
             }
         } catch (error) {
             console.error('Error updating status:', error)
@@ -87,38 +92,11 @@ export default function AdminOrders() {
         if (!orderToDelete) return
 
         try {
-            // 1. Fetch order items to find associated bookings
-            const { data: items } = await supabase
-                .from('order_items')
-                .select('booking_id')
-                .eq('order_id', orderToDelete)
-
-            const bookingIds = items?.map(item => item.booking_id).filter(Boolean) as string[]
-
-            // 2. Delete associated bookings if any
-            if (bookingIds && bookingIds.length > 0) {
-                await supabase
-                    .from('bookings')
-                    .delete()
-                    .in('id', bookingIds)
-            }
-
-            // 3. Delete order items
-            await supabase
-                .from('order_items')
-                .delete()
-                .eq('order_id', orderToDelete)
-
-            // 4. Delete the order itself
-            const { error } = await supabase
-                .from('orders')
-                .delete()
-                .eq('id', orderToDelete)
-
-            if (error) throw error
+            const result = await deleteOrderAction(orderToDelete)
+            if (!result.success) throw new Error(result.error)
 
             // Update local state
-            setOrders(orders.filter(o => o.id !== orderToDelete))
+            setOrders(prev => prev.filter(o => o.id !== orderToDelete))
             showToast('Pedido y registros asociados eliminados exitosamente', 'success')
         } catch (error) {
             console.error('Error deleting order:', error)
@@ -127,6 +105,15 @@ export default function AdminOrders() {
             setOrderToDelete(null)
             setIsDeleteModalOpen(false)
         }
+    }
+
+    const getEffectiveStatus = (order: AdminOrder) => {
+        const pStatus = order.payment_status?.toLowerCase()
+        const oStatus = order.status?.toLowerCase()
+        if (pStatus === 'approved' || oStatus === 'paid') return 'paid'
+        if (oStatus === 'completed' || oStatus === 'shipped' || oStatus === 'cancelled') return oStatus
+        if (pStatus === 'cancelled' || pStatus === 'rejected') return 'cancelled'
+        return oStatus || pStatus || 'pending'
     }
 
     const getStatusBadge = (status: string) => {
@@ -147,8 +134,8 @@ export default function AdminOrders() {
 
     const filteredOrders = orders.filter(o =>
         o.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        o.profiles?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        o.profiles?.full_name?.toLowerCase().includes(searchTerm.toLowerCase())
+        (o.customer_email || o.profiles?.email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (o.customer_name || o.profiles?.full_name || '').toLowerCase().includes(searchTerm.toLowerCase())
     )
 
     return (
@@ -198,44 +185,46 @@ export default function AdminOrders() {
                                     </td>
                                 </tr>
                             ) : (
-                                filteredOrders.map((order) => (
-                                    <tr key={order.id} className="hover:bg-white/2 transition-colors group">
-                                        <td className="p-6">
-                                            <p className="text-white font-mono text-xs mb-1">...{order.id.slice(-8)}</p>
-                                            <p className="text-white/40 text-xs">
-                                                {format(new Date(order.created_at), "d MMM yyyy, HH:mm", { locale: es })}
-                                            </p>
-                                        </td>
-                                        <td className="p-6">
-                                            <p className="text-white font-bold text-sm mb-1">{order.profiles?.full_name || 'Sin Nombre'}</p>
-                                            <p className="text-white/50 text-xs truncate max-w-[200px]">{order.profiles?.email}</p>
-                                        </td>
-                                        <td className="p-6">
-                                            <p className="text-emerald-400 font-bold tracking-wide">
-                                                ${order.total?.toLocaleString('es-AR')}
-                                            </p>
-                                            {order.shipping_cost > 0 && (
-                                                <p className="text-white/30 text-xs mt-1">
-                                                    Envío: ${order.shipping_cost?.toLocaleString('es-AR')}
+                                filteredOrders.map((order) => {
+                                    const effectiveStatus = getEffectiveStatus(order)
+                                    return (
+                                        <tr key={order.id} className="hover:bg-white/2 transition-colors group">
+                                            <td className="p-6">
+                                                <p className="text-white font-mono text-xs mb-1">...{order.id.slice(-8)}</p>
+                                                <p className="text-white/40 text-xs">
+                                                    {format(new Date(order.created_at), "d MMM yyyy, HH:mm", { locale: es })}
                                                 </p>
-                                            )}
-                                        </td>
-                                        <td className="p-6">
-                                            <div className="relative inline-block">
-                                                <select
-                                                    value={order.status?.toLowerCase() || 'pending'}
-                                                    onChange={(e) => updateOrderStatus(order.id, e.target.value)}
-                                                    className={`text-xs font-bold uppercase tracking-wider px-4 py-2 pr-8 rounded-full cursor-pointer appearance-none ${getStatusBadge(order.status)} bg-transparent focus:outline-hidden`}
-                                                >
-                                                    <option value="pending" className="bg-surface text-white">Pendiente</option>
-                                                    <option value="paid" className="bg-surface text-white">Pagado</option>
-                                                    <option value="shipped" className="bg-surface text-white">Enviado</option>
-                                                    <option value="completed" className="bg-surface text-white">Completado</option>
-                                                    <option value="cancelled" className="bg-surface text-white">Cancelado</option>
-                                                </select>
-                                                <ChevronDown className="w-3 h-3 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none opacity-50" />
-                                            </div>
-                                        </td>
+                                            </td>
+                                            <td className="p-6">
+                                                <p className="text-white font-bold text-sm mb-1">{order.customer_name || order.profiles?.full_name || 'Sin Nombre'}</p>
+                                                <p className="text-white/50 text-xs truncate max-w-[200px]">{order.customer_email || order.profiles?.email || 'Sin Email'}</p>
+                                            </td>
+                                            <td className="p-6">
+                                                <p className="text-emerald-400 font-bold tracking-wide">
+                                                    ${order.total?.toLocaleString('es-AR')}
+                                                </p>
+                                                {order.shipping_cost > 0 && (
+                                                    <p className="text-white/30 text-xs mt-1">
+                                                        Envío: ${order.shipping_cost?.toLocaleString('es-AR')}
+                                                    </p>
+                                                )}
+                                            </td>
+                                            <td className="p-6">
+                                                <div className="relative inline-block">
+                                                    <select
+                                                        value={effectiveStatus}
+                                                        onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                                                        className={`text-xs font-bold uppercase tracking-wider px-4 py-2 pr-8 rounded-full cursor-pointer appearance-none ${getStatusBadge(effectiveStatus)} bg-transparent focus:outline-hidden`}
+                                                    >
+                                                        <option value="pending" className="bg-surface text-white">Pendiente</option>
+                                                        <option value="paid" className="bg-surface text-white">Pagado</option>
+                                                        <option value="shipped" className="bg-surface text-white">Enviado</option>
+                                                        <option value="completed" className="bg-surface text-white">Completado</option>
+                                                        <option value="cancelled" className="bg-surface text-white">Cancelado</option>
+                                                    </select>
+                                                    <ChevronDown className="w-3 h-3 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none opacity-50" />
+                                                </div>
+                                            </td>
                                         <td className="p-6 text-right space-x-2">
                                             <button
                                                 onClick={() => {
@@ -256,7 +245,8 @@ export default function AdminOrders() {
                                             </button>
                                         </td>
                                     </tr>
-                                ))
+                                    )
+                                })
                             )}
                         </tbody>
                     </table>
@@ -266,7 +256,7 @@ export default function AdminOrders() {
             <OrderDetailModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                order={selectedOrder}
+                order={selectedOrder as any}
             />
 
             <ConfirmModal

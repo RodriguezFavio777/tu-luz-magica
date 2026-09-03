@@ -58,21 +58,25 @@ export async function sendOrderConfirmation(
             return { success: false, error }
         }
 
-        // Send Notification to Admin
-        await resend.emails.send({
-            from: `Plataforma Tu Luz Mágica <${SENDER_EMAIL}>`,
-            to: [ADMIN_EMAIL],
-            subject: `NUEVA ${isBooking ? 'RESERVA' : 'VENTA'} RECIBIDA - ${customerName}`,
-            react: AdminNotificationEmail({
-                orderType: isBooking ? 'Reserva' : 'Venta',
-                customerName,
-                customerEmail,
-                totalAmount,
-                items,
-                shippingAddress,
-                link: `https://tuluzmagica.com/admin/${isBooking ? 'bookings' : 'orders'}`
+        // Send Notification to Admin (non-blocking)
+        try {
+            await resend.emails.send({
+                from: `Plataforma Tu Luz Mágica <${SENDER_EMAIL}>`,
+                to: [ADMIN_EMAIL],
+                subject: `NUEVA ${isBooking ? 'RESERVA' : 'VENTA'} RECIBIDA - ${customerName}`,
+                react: AdminNotificationEmail({
+                    orderType: isBooking ? 'Reserva' : 'Venta',
+                    customerName,
+                    customerEmail,
+                    totalAmount,
+                    items,
+                    shippingAddress,
+                    link: `https://tuluzmagica.com/admin/${isBooking ? 'bookings' : 'orders'}`
+                })
             })
-        })
+        } catch (adminEmailErr) {
+            console.error('Non-blocking error sending admin notification email:', adminEmailErr)
+        }
 
         return { success: true, data }
     } catch (error) {

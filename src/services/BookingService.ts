@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { getFreeBusy } from '@/lib/googleCalendar'
 import { startOfDay, endOfDay } from 'date-fns'
 
@@ -34,7 +34,7 @@ export interface AdminBooking extends Booking {
 
 export class BookingService {
     static async getByDateRange(start: string, end: string) {
-        const supabase = await createClient()
+        const supabase = createAdminClient()
         const { data, error } = await supabase
             .from('bookings')
             .select('*, services(name)')
@@ -46,8 +46,24 @@ export class BookingService {
         return data as Booking[]
     }
 
+    static async getById(id: string) {
+        const supabase = createAdminClient()
+        try {
+            const { data, error } = await supabase
+                .from('bookings')
+                .select('*')
+                .eq('id', id)
+                .single()
+
+            if (error) return null
+            return data as Booking
+        } catch {
+            return null
+        }
+    }
+
     static async getAdminList() {
-        const supabase = await createClient()
+        const supabase = createAdminClient()
         const { data, error } = await supabase
             .from('bookings')
             .select(`
@@ -133,7 +149,7 @@ export class BookingService {
         customer_phone?: string | null
         notes?: string | null
     }) {
-        const supabase = await createClient()
+        const supabase = createAdminClient()
         const cleanPayload: Record<string, any> = { ...payload }
         if (!cleanPayload.user_id) {
             delete cleanPayload.user_id
@@ -158,7 +174,7 @@ export class BookingService {
     }
 
     static async updateStatus(id: string, status: string) {
-        const supabase = await createClient()
+        const supabase = createAdminClient()
         const { data, error } = await supabase
             .from('bookings')
             .update({ status })
@@ -171,7 +187,7 @@ export class BookingService {
     }
 
     static async updateBookingDetails(id: string, updates: Partial<Booking>) {
-        const supabase = await createClient()
+        const supabase = createAdminClient()
         const { data, error } = await supabase
             .from('bookings')
             .update(updates)
@@ -184,14 +200,14 @@ export class BookingService {
     }
 
     static async delete(id: string) {
-        const supabase = await createClient()
+        const supabase = createAdminClient()
         const { error } = await supabase.from('bookings').delete().eq('id', id)
         if (error) throw error
         return true
     }
 
     static async findByOrderNote(orderId: string, serviceId: string) {
-        const supabase = await createClient()
+        const supabase = createAdminClient()
         const { data, error } = await supabase
             .from('bookings')
             .select('*')
@@ -199,12 +215,12 @@ export class BookingService {
             .ilike('notes', `%${orderId}%`)
             .order('created_at', { ascending: false })
 
-        if (error) throw error
+        if (error || !data || data.length === 0) return undefined
         return data[0] as Booking | undefined
     }
 
     static async updateGoogleCalendarId(id: string, eventId: string) {
-        const supabase = await createClient()
+        const supabase = createAdminClient()
         const { error } = await supabase
             .from('bookings')
             .update({ google_calendar_id: eventId })
@@ -214,3 +230,4 @@ export class BookingService {
         return true
     }
 }
+

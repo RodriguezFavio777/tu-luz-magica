@@ -152,11 +152,23 @@ export function OrderDetailModal({ isOpen, onClose, order }: OrderDetailModalPro
                                         </div>
                                         <div className="flex justify-between items-center text-sm">
                                             <span className="text-white/40">Estado:</span>
-                                            <span className="text-xs font-bold uppercase tracking-wider text-primary">{order.status}</span>
+                                            <span className="text-xs font-bold uppercase tracking-wider text-primary">
+                                                {order.payment_status === 'approved' || order.status === 'paid'
+                                                    ? 'Pagado'
+                                                    : (order.status === 'completed'
+                                                        ? 'Completado'
+                                                        : (order.status === 'shipped'
+                                                            ? 'Enviado'
+                                                            : (order.status === 'cancelled' || order.payment_status === 'cancelled'
+                                                                ? 'Cancelado'
+                                                                : 'Pendiente')))}
+                                            </span>
                                         </div>
                                         <div className="flex justify-between items-center text-sm">
                                             <span className="text-white/40">Pago:</span>
-                                            <span className="text-white uppercase text-xs">{order.payment_status || 'Pendiente'}</span>
+                                            <span className="text-white uppercase text-xs">
+                                                {order.payment_status === 'approved' || order.status === 'paid' ? 'Aprobado' : (order.payment_status || 'Pendiente')}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
