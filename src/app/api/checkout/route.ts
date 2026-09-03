@@ -78,7 +78,7 @@ export async function POST(request: Request) {
 
                 const booking = await BookingService.create({
                     user_id: user_id || null,
-                    service_id: item.productId,
+                    service_id: item.productId || item.id || '',
                     start_time: startTime.toISOString(),
                     end_time: endTime.toISOString(),
                     status: 'pending',
@@ -149,7 +149,7 @@ export async function POST(request: Request) {
                 const baseUrl = host ? `${proto}://${host}` : (process.env.NEXT_PUBLIC_SITE_URL || 'https://tuluzmagica.com')
 
                 const prefItems = items.map(item => ({
-                    id: item.id || item.productId,
+                    id: (item.id || item.productId || 'item').toString(),
                     title: item.name,
                     unit_price: Math.round(item.price * 100) / 100,
                     quantity: item.type === 'service' ? 1 : item.quantity,
