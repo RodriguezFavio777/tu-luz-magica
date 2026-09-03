@@ -249,13 +249,13 @@ export function CheckoutForm() {
 
     const handlePayment = async () => {
         setLoading(true)
-        showLoading(paymentMethod === 'mercadopago' ? 'Iniciando pago con Mercado Pago...' : 'Confirmando tu pedido...')
+        showLoading('Confirmando tu pedido...')
+
+        const shippingCost = requiresShipping && selectedShipping ? selectedShipping.valor : 0
+        const calculatedTotal = subtotal + shippingCost
+        let orderId = `TLM-${Date.now().toString(36).toUpperCase()}`
 
         try {
-            const shippingCost = requiresShipping && selectedShipping ? selectedShipping.valor : 0
-            const calculatedTotal = subtotal + shippingCost
-
-            // 1. Call the API endpoint to create order and preference
             const response = await fetch('/api/checkout', {
                 method: 'POST',
                 headers: {
@@ -275,84 +275,43 @@ export function CheckoutForm() {
                     fullName: shippingData.fullName,
                     email: shippingData.email,
                     phone: shippingData.phone,
-                    payment_method: paymentMethod
+                    payment_method: 'transfer'
                 }),
             })
 
-            const data = await response.json()
-
-            if (!response.ok) {
-                throw new Error(data.error || 'Error al procesar el pedido')
+            const data = await response.json().catch(() => ({}))
+            if (data.orderId) {
+                orderId = data.orderId
             }
+        } catch (error: unknown) {
+            console.error('Error creating order, redirecting to WhatsApp fallback:', error)
+        }
 
-            const orderId = data.orderId || 'PENDIENTE'
+        // WhatsApp Transfer Flow
+        setStep('success')
 
-            if (paymentMethod === 'mercadopago') {
-                // If preference was returned by /api/checkout, or fallback to /api/checkout/mercadopago
-                let redirectUrl = data.sandbox_init_point || data.init_point
-                if (!redirectUrl) {
-                    const mpRes = await fetch('/api/checkout/mercadopago', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            orderId,
-                            items,
-                            shipping_cost: shippingCost,
-                            customer: {
-                                fullName: shippingData.fullName,
-                                email: shippingData.email,
-                                phone: shippingData.phone
-                            }
-                        })
-                    })
-                    if (!mpRes.ok) {
-                        const mpErr = await mpRes.json().catch(() => ({}))
-                        throw new Error(mpErr.error || 'No se pudo generar el enlace de pago de Mercado Pago. Por favor reintenta.')
-                    }
-                    const mpData = await mpRes.json()
-                    redirectUrl = mpData.sandbox_init_point || mpData.init_point
-                }
-
-                if (!redirectUrl) {
-                    throw new Error('No se pudo generar el enlace de pago de Mercado Pago. Por favor reintenta.')
-                }
-
-                // Preserve cart before redirect (recovery supported via /checkout/failure; /checkout/success clears cart on arrival)
-                if (typeof window !== 'undefined') {
-                    localStorage.removeItem('checkout_shipping_data')
-                    window.location.assign(redirectUrl)
-                    return
-                }
-            } else {
-                // WhatsApp Transfer Flow
-                setStep('success')
-
-                const message = encodeURIComponent(`✨ ¡Hola Camí! ✨
+        const message = encodeURIComponent(`✨ ¡Hola Camí! ✨
 Te escribo porque quiero avanzar con mi pedido #${orderId.slice(0, 8)}.
 
 👤 Nombre: ${shippingData.fullName || user?.email || 'Anónimo'}
+📧 Email: ${shippingData.email}
+📱 Teléfono: ${shippingData.phone}
 💰 Monto a Pagar: $${calculatedTotal.toLocaleString('es-AR')}
 
 ¿Me pasas los datos para realizar la transferencia? ¡Gracias!`)
 
-                const waLink = `https://wa.me/5491137017109?text=${message}`
+        const waLink = `https://wa.me/5491137017109?text=${message}`
 
-                setTimeout(() => {
-                    clearCart()
-                    if (typeof window !== 'undefined') {
-                        localStorage.removeItem('checkout_shipping_data')
-                        window.location.assign(waLink)
-                    }
-                }, 1000)
+        setTimeout(() => {
+            clearCart()
+            if (typeof window !== 'undefined') {
+                localStorage.removeItem('checkout_shipping_data')
+                window.location.assign(waLink)
             }
-        } catch (error: unknown) {
-            console.error('Error creating order:', error)
-            const errorMessage = error instanceof Error ? error.message : String(error)
-            setGlobalError(errorMessage || 'Hubo un error al procesar el pedido. Por favor intenta nuevamente.')
-        } finally {
-            setLoading(false)
-            hideLoading()
-        }
+        }, 800)
+
+        setLoading(false)
+        hideLoading()
     }
 
     if (items.length === 0 && step !== 'success') {
@@ -697,94 +656,39 @@ Te escribo porque quiero avanzar con mi pedido #${orderId.slice(0, 8)}.
                         </div>
 
                         <div className="mb-6">
-                            <h4 className="font-bold text-white mb-3 text-sm">Método de Pago</h4>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div
-                                    onClick={() => setPaymentMethod('mercadopago')}
-                                    className={`p-4 rounded-xl border flex flex-col text-left transition-all cursor-pointer ${paymentMethod === 'mercadopago'
-                                        ? 'bg-primary/10 border-primary shadow-lg shadow-primary/10'
-                                        : 'bg-black/20 border-white/10 hover:border-white/20'
-                                        }`}
-                                >
-                                    <div className="flex items-center justify-between w-full mb-2">
-                                        <span className="font-bold text-white flex items-center gap-2">
-                                            <CreditCard className="w-5 h-5 text-primary" />
-                                            Mercado Pago
-                                        </span>
-                                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/20 text-primary font-bold">
-                                            Sandbox / Test
-                                        </span>
-                                    </div>
-                                    <p className="text-xs text-white/50">
-                                        Tarjetas de crédito/débito y dinero en cuenta.
-                                    </p>
-                                </div>
-
-                                <div
-                                    onClick={() => setPaymentMethod('transfer')}
-                                    className={`p-4 rounded-xl border flex flex-col text-left transition-all cursor-pointer ${paymentMethod === 'transfer'
-                                        ? 'bg-green-500/10 border-green-500 shadow-lg shadow-green-500/10'
-                                        : 'bg-black/20 border-white/10 hover:border-white/20'
-                                        }`}
-                                >
-                                    <div className="flex items-center justify-between w-full mb-2">
-                                        <span className="font-bold text-white flex items-center gap-2">
-                                            <svg className="w-5 h-5 fill-current text-green-400" viewBox="0 0 24 24">
-                                              <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
-                                            </svg>
-                                            Transferencia / WhatsApp
-                                        </span>
-                                    </div>
-                                    <p className="text-xs text-white/50">
-                                        Coordinación directa y datos bancarios por WhatsApp.
-                                    </p>
+                            <h4 className="font-bold text-white mb-3 text-sm">Método de Pago y Confirmación</h4>
+                            <div className="p-4 rounded-xl border bg-green-500/10 border-green-500 shadow-lg shadow-green-500/10 flex items-center gap-3">
+                                <svg className="w-6 h-6 fill-current text-green-400 shrink-0" viewBox="0 0 24 24">
+                                  <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                                </svg>
+                                <div>
+                                    <p className="font-bold text-white text-sm">Coordinación por WhatsApp / Transferencia</p>
+                                    <p className="text-xs text-white/60">Al hacer clic, se enviarán los datos de tu pedido directamente al WhatsApp de Camí para coordinar el pago.</p>
                                 </div>
                             </div>
                         </div>
 
-                        {paymentMethod === 'mercadopago' ? (
-                            <button
-                                onClick={handlePayment}
-                                disabled={loading}
-                                className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-4 rounded-xl transition-colors shadow-lg shadow-primary/20 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {loading ? (
-                                    <>
-                                        <Loader2 className="w-5 h-5 animate-spin" />
-                                        Redirigiendo a Mercado Pago...
-                                    </>
-                                ) : (
-                                    <>
-                                        <CreditCard className="w-5 h-5" />
-                                        Pagar con Mercado Pago (Modo Prueba)
-                                    </>
-                                )}
-                            </button>
-                        ) : (
-                            <button
-                                onClick={handlePayment}
-                                disabled={loading}
-                                className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl transition-colors shadow-lg shadow-green-500/20 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {loading ? (
-                                    <>
-                                        <Loader2 className="w-5 h-5 animate-spin" />
-                                        Procesando...
-                                    </>
-                                ) : (
-                                    <>
-                                        <svg className="w-6 h-6 fill-current text-white" viewBox="0 0 24 24">
-                                          <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
-                                        </svg>
-                                        Confirmar Pedido por WhatsApp
-                                    </>
-                                )}
-                            </button>
-                        )}
+                        <button
+                            onClick={handlePayment}
+                            disabled={loading}
+                            className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl transition-colors shadow-lg shadow-green-500/20 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {loading ? (
+                                <>
+                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                    Procesando...
+                                </>
+                            ) : (
+                                <>
+                                    <svg className="w-6 h-6 fill-current text-white" viewBox="0 0 24 24">
+                                      <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                                    </svg>
+                                    Confirmar Pedido por WhatsApp
+                                </>
+                            )}
+                        </button>
                         <p className="text-center text-white/30 text-xs mt-4">
-                            {paymentMethod === 'mercadopago'
-                                ? 'Serás redirigido al portal seguro de Mercado Pago en modo prueba.'
-                                : 'Se abrirá WhatsApp para enviar los detalles de tu pedido a Camí.'}
+                            Se abrirá WhatsApp para enviar los detalles de tu pedido a Camí.
                         </p>
                     </motion.div>
                 )}
