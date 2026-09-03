@@ -30,10 +30,10 @@ export const ServiceSchema = z.object({
 })
 
 export const CheckoutSchema = z.object({
-    user_id: z.string().uuid().nullable().optional(),
+    user_id: z.string().nullable().optional().transform(val => (val && typeof val === 'string' && val.trim() !== '' ? val : null)),
     items: z.array(z.object({
         id: z.string().optional(),
-        productId: z.string(),
+        productId: z.string().optional().nullable(),
         name: z.string(),
         quantity: z.number().int().positive(),
         price: z.number(),
@@ -59,7 +59,7 @@ export const CheckoutSchema = z.object({
     fullName: z.string().min(1, 'El nombre completo es requerido'),
     email: z.string().email('Email inválido'),
     phone: z.string().min(5, 'Teléfono inválido'),
-    payment_method: z.enum(['mercadopago', 'transfer']).optional().default('mercadopago')
+    payment_method: z.enum(['mercadopago', 'transfer']).optional().default('transfer')
 }).refine(data => !data.requires_shipping || (!!data.shipping_address?.trim() && !!data.shipping_city?.trim()), {
     message: 'Dirección y ciudad son requeridas cuando requires_shipping es true',
     path: ['shipping_address']

@@ -92,8 +92,8 @@ export async function POST(request: Request) {
 
             orderItemsToInsert.push({
                 order_id: order.id,
-                product_id: item.type === 'physical' ? item.productId : null,
-                service_id: item.type === 'service' ? item.productId : null,
+                product_id: item.type === 'physical' ? (item.productId || item.id || null) : null,
+                service_id: item.type === 'service' ? (item.productId || item.id || null) : null,
                 product_name: item.name,
                 quantity: item.quantity,
                 unit_price: item.price,
@@ -106,34 +106,38 @@ export async function POST(request: Request) {
 
         // 3. Send Confirmation Email via Service (ONLY for bank transfer; Mercado Pago orders send upon payment webhook approval)
         if (email && payment_method === 'transfer') {
-            const isBooking = items.some(i => i.type === 'service')
-            const emailItems = items.map(i => {
-                let bookingDate, bookingTime;
-                if (i.bookingData && i.bookingData.startTime) {
-                    const dt = parseBookingStartTime(i.bookingData.startTime);
-                    const nameLower = i.name.toLowerCase();
-                    const isRitual = nameLower.includes('ritual') || nameLower.includes('limpieza') || nameLower.includes('velación') || nameLower.includes('endulzamiento');
+            try {
+                const isBooking = items.some(i => i.type === 'service')
+                const emailItems = items.map(i => {
+                    let bookingDate, bookingTime;
+                    if (i.bookingData && i.bookingData.startTime) {
+                        const dt = parseBookingStartTime(i.bookingData.startTime);
+                        const nameLower = i.name.toLowerCase();
+                        const isRitual = nameLower.includes('ritual') || nameLower.includes('limpieza') || nameLower.includes('velación') || nameLower.includes('endulzamiento');
 
-                    bookingDate = dt.toLocaleDateString('es-AR', { day: 'numeric', month: 'long' });
-                    bookingTime = isRitual ? null : (dt.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }) + 'hs');
-                }
-                return {
-                    name: i.name, quantity: i.quantity, price: i.price,
-                    variantName: i.variantName, bookingDate, bookingTime
-                }
-            })
+                        bookingDate = dt.toLocaleDateString('es-AR', { day: 'numeric', month: 'long' });
+                        bookingTime = isRitual ? null : (dt.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }) + 'hs');
+                    }
+                    return {
+                        name: i.name, quantity: i.quantity, price: i.price,
+                        variantName: i.variantName, bookingDate, bookingTime
+                    }
+                })
 
-            await EmailService.sendOrderConfirmation(
-                email,
-                fullName,
-                order.id,
-                emailItems,
-                total,
-                requires_shipping ? `${shipping_address}, ${shipping_city}` : 'Digital',
-                isBooking,
-                subtotal,
-                shipping_cost
-            )
+                await EmailService.sendOrderConfirmation(
+                    email,
+                    fullName,
+                    order.id,
+                    emailItems,
+                    total,
+                    requires_shipping ? `${shipping_address}, ${shipping_city}` : 'Digital',
+                    isBooking,
+                    subtotal,
+                    shipping_cost
+                )
+            } catch (emailErr) {
+                console.error('Non-blocking Email error:', emailErr)
+            }
         }
 
         let preferenceData: { preferenceId?: string; init_point?: string; sandbox_init_point?: string } = {}
