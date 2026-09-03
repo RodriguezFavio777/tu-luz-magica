@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Manrope } from "next/font/google";
 import React from "react";
+import Script from "next/script";
 import "./globals.css";
 import { LayoutWrapper } from "@/components/layout/LayoutWrapper";
 import ScrollToTop from "@/components/layout/ScrollToTop";
@@ -70,6 +71,18 @@ export default function RootLayout({
         <link rel="preconnect" href="https://lh3.googleusercontent.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://xnjkhtvaybxckbqliemn.supabase.co" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://s3c.nyc3.cdn.digitaloceanspaces.com" crossOrigin="anonymous" />
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-GYR3KPG9K5"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-GYR3KPG9K5');
+          `}
+        </Script>
       </head>
       <body
         className={`${fraunces.variable} ${manrope.variable} font-body antialiased selection:bg-pink-400 selection:text-white`}
